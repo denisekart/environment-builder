@@ -28,7 +28,6 @@ namespace EnvironmentBuilder.Extensions
         {
             return configuration.GetValue<Type>(Constants.SourceRequiredTypeKey);
         }
-
         /// <summary>
         /// Sets the description value. Can be used on a source or an environment builder
         /// </summary>
@@ -69,11 +68,10 @@ namespace EnvironmentBuilder.Extensions
         /// <returns></returns>
         public static string Help(this IEnvironmentBuilder builder)
         {
-            return $@"{builder.Configuration.Description()}
+            return $@"{builder.Description()}
 {string.Join("-", Enumerable.Repeat("-", 15).ToArray())}
 {string.Join(Environment.NewLine,builder.Bundles.Select(x=>string.Join(" >> ",x.Sources.Select(y=>y.Trace()??"??").ToArray())).ToArray())}";
         }
-
         /// <summary>
         /// Adds a trace to the current value
         /// </summary>
@@ -93,7 +91,6 @@ namespace EnvironmentBuilder.Extensions
         {
             return configuration.GetValue(Constants.SourceTraceValueKey);
         }
-
         /// <summary>
         /// Adds the default value source to the pipe
         /// </summary>
@@ -136,6 +133,35 @@ namespace EnvironmentBuilder.Extensions
         {
             return builder.WithException(message);
         }
+        /// <summary>
+        /// Adds the common key to the configuration to be consumed by other types
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static IEnvironmentBuilder WithCommonKey(this IEnvironmentBuilder builder, string key)
+        {
+            return builder.WithConfiguration(cfg => cfg.SetValue(Constants.SourceCommonKeyKey, key));
+        }
+        /// <summary>
+        /// This is a shorthand for <see cref="WithCommonKey"/>
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static IEnvironmentBuilder With(this IEnvironmentBuilder builder, string key)
+        {
+            return builder.WithCommonKey(key);
+        }
+        /// <summary>
+        /// Gets the common key for the source or environment.See also <seealso cref="WithCommonKey"/>
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static string GetCommonKey(this IReadonlyEnvironmentConfiguration configuration)
+        {
+            return configuration.GetValue(Constants.SourceCommonKeyKey);
+        }
     }
     public static class CommandLineArgumentExtensions
     {
@@ -144,8 +170,9 @@ namespace EnvironmentBuilder.Extensions
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="name"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IEnvironmentBuilder WithArgument(this IEnvironmentBuilder builder,string name)
+        public static IEnvironmentBuilder WithArgument(this IEnvironmentBuilder builder,string name,Action<IEnvironmentConfiguration> configuration=null)
         {
             return builder.WithSource(cfg =>
             {
@@ -154,6 +181,7 @@ namespace EnvironmentBuilder.Extensions
                 return parser.Value(name,requiredType);
             },cfg =>
             {
+                configuration?.Invoke(cfg);
                 cfg.Trace($"[argument]{name}");
                 if (!cfg.HasValue(typeof(ArgumentParser).FullName))
                 {
@@ -173,7 +201,16 @@ namespace EnvironmentBuilder.Extensions
         {
             return builder.WithArgument(name);
         }
-
+        /// <summary>
+        /// Shorthand alias for <see cref="WithArgument"/> using the common key set beforehand
+        /// <seealso cref="CommonExtensions.WithCommonKey"/>
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static IEnvironmentBuilder Arg(this IEnvironmentBuilder builder)
+        {
+            return builder.WithArgument(builder.Configuration.GetCommonKey());
+        }
     }
 
 
@@ -368,6 +405,7 @@ namespace EnvironmentBuilder.Extensions
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="configuration"></param>
+        /// <param name="target"></param>
         public static void SetEnvironmmentTarget(this IEnvironmentConfiguration configuration, EnvironmentVariableTarget target)
         {
             configuration.SetValue(Constants.EnvironmentVariableTargetKey, target);
@@ -383,18 +421,57 @@ namespace EnvironmentBuilder.Extensions
                 ?configuration.GetValue<EnvironmentVariableTarget>(Constants.EnvironmentVariableTargetKey) :
             EnvironmentVariableTarget.Process;
         }
-
-        public static IEnvironmentBuilder WithEnvironmentVariable(this IEnvironmentBuilder builder, string name, EnvironmentVariableTarget environmentTarget)
+        /// <summary>
+        /// Sets the environment variable prefix to the source or environment
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        public static IEnvironmentConfiguration WithEnvironmentVariablePrefix(
+            this IEnvironmentConfiguration configuration, string prefix)
+        {
+            return configuration.SetValue(Constants.EnvironmentVariablePrefixKey, prefix);
+        }
+        /// <summary>
+        /// Clears the environment variable prefix for the source or the environment
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        public static IEnvironmentConfiguration WithNoEnvironmentVariablePrefix(
+            this IEnvironmentConfiguration configuration, string prefix)
+        {
+            return configuration.SetValue<string>(Constants.EnvironmentVariablePrefixKey, null);
+        }
+        /// <summary>
+        /// Gets the environment variable prefix. Defaults to null
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public static string GetEnvironmentVariablePrefix(this IReadonlyEnvironmentConfiguration configuration)
+        {
+            return configuration.GetValue(Constants.EnvironmentVariablePrefixKey);
+        }
+        /// <summary>
+        /// Adds the environment variable source to te pipe
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="name"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public static IEnvironmentBuilder WithEnvironmentVariable(this IEnvironmentBuilder builder, string name, Action<IEnvironmentConfiguration> configuration=null)
         {
             return builder.WithSource(cfg =>
             {
                 var parser = cfg.GetValue<EnvironmentVariableParser>(typeof(EnvironmentVariableParser).FullName);
                 var requiredType = cfg.GetBuildType();
                 var target = cfg.GetEnvironmentTarget();
-                return parser.Value(name, requiredType,target);
+                var prefix = cfg.GetEnvironmentVariablePrefix();
+                return parser.Value(name, requiredType,target,prefix);
             }, cfg =>
             {
-                cfg.Trace($"[environment]{name}").SetEnvironmmentTarget(environmentTarget);
+                configuration?.Invoke(cfg);
+                cfg.Trace($"[environment]{name}");
                 if (!cfg.HasValue(typeof(EnvironmentVariableParser).FullName))
                 {
                     cfg.SetValue(typeof(EnvironmentVariableParser).FullName,
@@ -403,20 +480,39 @@ namespace EnvironmentBuilder.Extensions
 
             });
         }
-
+        /// <summary>
+        /// Shorthand for <see cref="WithEnvironmentVariable"/>
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static IEnvironmentBuilder Env(this IEnvironmentBuilder builder, string name)
+        {
+            return builder.WithEnvironmentVariable(name);
+        }
+        /// <summary>
+        /// Shorthand alias for <see cref="WithEnvironmentVariable"/> using the common key set beforehand
+        /// <seealso cref="CommonExtensions.WithCommonKey"/>
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static IEnvironmentBuilder Env(this IEnvironmentBuilder builder)
+        {
+            return builder.WithEnvironmentVariable(builder.Configuration.GetCommonKey());
+        }
         internal class EnvironmentVariableParser
         {
             private string NormalizeKey(string key)
             {
                 return key?.Trim();
             }
-            public object Value(string name, Type type,EnvironmentVariableTarget target)
+            public object Value(string name, Type type,EnvironmentVariableTarget target, string prefix)
             {
                 if (string.IsNullOrEmpty(name?.Trim()))
                     return null;
                 if (type == null)
                     type = typeof(string);
-                var key = NormalizeKey(name);
+                var key = NormalizeKey($"{prefix??string.Empty}{name}");
                 
                 var value = Environment.GetEnvironmentVariable(key,target);
                 if (typeof(string) == type)
@@ -493,13 +589,8 @@ namespace EnvironmentBuilder.Extensions
 
     public static class JsonFileExtensions
     {
-
     }
 
-    public static class YamlFileExtensions
-    {
-
-    }
 
     public static class MsSqlDatabaseExtensions
     {
