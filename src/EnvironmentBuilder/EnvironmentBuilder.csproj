@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net46;net45;net40;net35</TargetFrameworks>
+    <Authors>Denis Ekart</Authors>
+    <Description>Utility for building the application environment using various configuration sources such as arguments, environment variables, json files, xml files etc. Supports a fluid API and is open to configuration and extension. Can easily be integrated with 3rd party tools and utilities.</Description>
+    <Copyright>Denis Ekart</Copyright>
+    <PackageProjectUrl>https://denisekart.visualstudio.com/Eki.EnvironmentBuilder</PackageProjectUrl>
+    <RepositoryUrl>https://denisekart.visualstudio.com/Eki.EnvironmentBuilder/_git/Eki.EnvironmentBuilder</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>configuration environment arguments json xml parse fluid extension</PackageTags>
+    <PackageReleaseNotes>v1</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
