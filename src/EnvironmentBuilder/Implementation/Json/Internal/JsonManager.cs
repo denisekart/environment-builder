@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 
 namespace EnvironmentBuilder.Implementation.Json
 {
+    //TODO: Make some Try methods
     internal class JsonManager
     {
         public JsonManager()
@@ -33,6 +35,17 @@ namespace EnvironmentBuilder.Implementation.Json
                 var method = JUtils.GetCastMethodForInputType<JEnumerationNode>();
                 var generic = method.MakeGenericMethod(arg0);
                 var result = generic.Invoke(null, new[] {enu});
+                return (T) result;
+            }
+            else if (value is JEnumerationNode jen)
+            {
+                var data = jen.Cast<T>();
+                if (data == null) data = Enumerable.Empty<T>();
+                var enumerable = data as T[] ?? data.ToArray();
+                if(enumerable.Length>1)
+                    JUtils.ValidateOutOfBounds();
+
+                return enumerable.FirstOrDefault();
             }
             else if(value is JValueNode jvn)
             {

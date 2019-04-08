@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using EnvironmentBuilder.Implementation.Json;
 using Xunit;
 
@@ -83,6 +84,15 @@ namespace EnvironmentBuilderTests
             var json = "{\"foo\":{\"bar\":\"baz\",\"enum\":[1,2,3],\"bool\":true}}";
 
             var endNode = JsonManager.Find("$.foo.enum[0]", json);
+            Assert.Equal(1, JsonManager.Parse<int>(endNode));
+        }
+
+        [Fact]
+        public void ExpandPathRecursiveDescentTest()
+        {
+            var json = "{\"foo\":{\"bar\":\"baz\",\"enum\":[1,2,3],\"bool\":true}}";
+
+            var endNode = JsonManager.Find("$..enum[0][0]", json);
             Assert.Equal(1, JsonManager.Parse<int>(endNode));
         }
     }
