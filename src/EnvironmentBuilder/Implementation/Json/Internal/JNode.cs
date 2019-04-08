@@ -17,6 +17,25 @@ namespace EnvironmentBuilder.Implementation.Json
             Enumeration
         }
 
+        public override string ToString()
+        {
+            switch (_type)
+            {
+                case NodeType.Unknown:
+                    return $"{_type}";
+                case NodeType.Leaf:
+                    return $"{_type}({_value})";
+                case NodeType.Node:
+                    return
+                        $"{_type}[{string.Join(",", _nodeValue?.Keys?.Select(x => x).ToArray() ?? Enumerable.Empty<string>().ToArray())}]";
+                case NodeType.Enumeration:
+                    return $"{_type}({_enumerationValue?.Count()??0})";
+                default:
+                    return base.ToString();
+            }
+        }
+
+
         public JNode(NodeType type,object value)
         {
             _type = type;
@@ -42,14 +61,13 @@ namespace EnvironmentBuilder.Implementation.Json
                 {
                     case NodeType.Leaf:
                         return _value;
-                        break;
+                        
                     case NodeType.Node:
                         return _nodeValue;
-                        break;
+                        
                     case NodeType.Enumeration:
                         return _enumerationValue;
-                        break;
-                    case NodeType.Unknown:
+
                     default:
                         throw new ArgumentException();
                 }
@@ -114,10 +132,10 @@ namespace EnvironmentBuilder.Implementation.Json
                     return new JContentNode(null);
                 case JConstants.EnumerationOpeningToken://parsing array
                     return ParseEnumerationValue(buffer);
-                    break;
+                    
                 case JConstants.EnumerationClosingToken://todo - i need it here
                     return new JEnumerationNode(null);
-                    break;
+                    
                 case JConstants.KeyValueOpeningClosingToken://parsing string end value
                     buffer.MoveNext();
                     var val = buffer.MoveNext((s, i, c) => s[i+1]==JConstants.KeyValueOpeningClosingToken);
@@ -125,7 +143,7 @@ namespace EnvironmentBuilder.Implementation.Json
                     return new JValueNode(val);
                 default://parsing boolean,null, number end value
                     return ParseLowLevelNodeValue(buffer, next);
-                    break;
+                    
             }
 
             

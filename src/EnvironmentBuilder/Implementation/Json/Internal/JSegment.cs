@@ -13,6 +13,13 @@ namespace EnvironmentBuilder.Implementation.Json
         private readonly Func<JNode, JNode> _expression;
         private readonly object _referenceValue;
 
+        public SegmentType Type => _type;
+        public object ReferenceValue => _referenceValue;
+        public override string ToString()
+        {
+            return $"{_type}({_referenceValue})";
+        }
+
         public enum SegmentType
         {
             Root,
@@ -31,7 +38,12 @@ namespace EnvironmentBuilder.Implementation.Json
 
         public static JNode Expand(string expression, JNode json)
         {
-            var segments = ParsePath(expression);
+            var segments = Parse(expression);
+            return Expand(segments, json);
+        }
+
+        public static JNode Expand(IEnumerable<JSegment> segments, JNode json)
+        {
             JNode value = json;
             foreach (var jSegment in segments)
             {
@@ -41,19 +53,36 @@ namespace EnvironmentBuilder.Implementation.Json
             return value;
         }
 
-        public static IEnumerable<JSegment> ParsePath(string path)
+        public static IEnumerable<JSegment> Parse(string path)
         {
             var buffer=new StringBuffer(path);
-            return ParsePath(buffer);
+            return Parse(buffer);
         }
-        public static IEnumerable<JSegment> ParsePath(ITokenBuffer path)
+        public static IEnumerable<JSegment> Parse(ITokenBuffer path)
         {
             var segments=new List<JSegment>();
             var next = path.MoveNextNonEmptyChar();
             if (next.HasValue && next.Value == JConstants.SegmentRootToken)
             {
-                segments.Add(new JSegment(SegmentType.Root,ExpandRoot));
-                next = path.MoveNext();
+                var root = new JSegment(SegmentType.Root, ExpandRoot);
+                next = path.MoveNextNonEmptyChar();
+                if (!next.HasValue)
+                {
+                    segments.Add(root);
+                    return segments;
+                }
+
+                if (next == JConstants.ExpressionStartToken)
+                {//i contain an expression
+                    var expr = path.MoveNext((s, i, c) => s[i + 1] == JConstants.ExpressionEndToken);
+                    if (!string.IsNullOrEmpty(expr))
+                    {
+                        root=new JSegment(SegmentType.Root,ExpandRoot,expr);
+                    }
+                    JUtils.ValidateChar(path.MoveNext(),JConstants.ExpressionEndToken);
+                    next = path.MoveNextNonEmptyChar();
+                }
+                segments.Add(root);
                 if (!next.HasValue)
                     return segments;
                 JUtils.ValidateChar(next,JConstants.SegmentSeparatorToken);
@@ -98,6 +127,9 @@ namespace EnvironmentBuilder.Implementation.Json
             }
 
             var path = segment.Substring(0, i);
+            if (path == JConstants.WildcardSegmentToken.ToString())
+                singleNodeType = SegmentType.Wildcard;
+
             Func<JNode, JNode> expr = n => ExpandValue(n, path);
             Func<JNode, JNode> expr2 = n => ExpandValueRecursive(n, path);
             Func<JNode, JNode> expr3 = n => ExpandWildcard(n);
@@ -114,15 +146,6 @@ namespace EnvironmentBuilder.Implementation.Json
             {
                 var indexer = segment.Substring(i, segment.Length - i);
                 processed.AddRange(ProcessRawIndexer(indexer));
-                //if (indexer[0] != JConstants.SegmentIndexerStart &&
-                //    indexer[indexer.Length - 1] != JConstants.SegmentIndexerEnd) 
-                //    JUtils.ValidateOutOfBounds("Expected an indexer but got an incomplete token.");
-                //indexer = indexer.Substring(1, indexer.Length - 2);
-                //processed.Add(
-                //    new JSegment(
-                //        SegmentType.Indexer,
-                //        n=>ExpandIndexer(n,indexer),
-                //        indexer));
             }
 
             return processed;
@@ -234,6 +257,12 @@ namespace EnvironmentBuilder.Implementation.Json
 
         private static JNode ExpandWildcard(JNode node)
         {
+            throw new NotImplementedException("This feature is not implemented yet.");
+            //TODO
+            //all of the child nodes should be expanded into a single content node recusively
+            //all of the immediate child nodes shoul be expanded into an enumeration
+
+#pragma warning disable 162
             if (node is JEnumerationNode jen)
                 return jen;
             if (node is JValueNode jvn)
@@ -242,6 +271,7 @@ namespace EnvironmentBuilder.Implementation.Json
                 return new JEnumerationNode((jcn.Value as IDictionary<string, JNode>)?.Select(x => x.Value));
             JUtils.ValidateOutOfBounds("Cannot expand a wildcard node. Path does not conform.");
             throw new NotImplementedException("This exception should never be hit");
+#pragma warning restore 162
 
         }
         private static JNode ExpandRoot(JNode node)

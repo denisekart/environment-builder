@@ -20,5 +20,7 @@
         public const char WildcardSegmentToken = '*';
         public const char SegmentIndexerStart = '[';
         public const char SegmentIndexerEnd = ']';
+        public const char ExpressionStartToken = '(';
+        public const char ExpressionEndToken = ')';
     }
 }

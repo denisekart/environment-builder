@@ -5,16 +5,6 @@ using Xunit;
 
 namespace EnvironmentBuilderTests
 {
-    public class Foo
-    {
-        public bool foo { get; set; } = true;
-        public bool? bar { get; set; } = null;
-    }
-
-    public class Bar
-    {
-        public string str { get; set; } = "foo";
-    }
     public class JsonParserTests
     {
         [Fact]
@@ -31,7 +21,7 @@ namespace EnvironmentBuilderTests
         {
             var json = "{\"foo\":true}";
             var value = JsonManager.Parse<Foo>(json);
-            Assert.Equal(true,value.foo);
+            Assert.True(value.foo);
         }
         [Fact]
         public void ParseFalseTest()
@@ -93,6 +83,31 @@ namespace EnvironmentBuilderTests
             var json = "{\"foo\":{\"bar\":\"baz\",\"enum\":[1,2,3],\"bool\":true}}";
 
             var endNode = JsonManager.Find("$..enum[0][0]", json);
+            Assert.Equal(1, JsonManager.Parse<int>(endNode));
+        }
+        [Fact]
+        public void ExpandPathRecursiveDescentGenericTest()
+        {
+            var json = "{\"foo\":{\"bar\":\"baz\",\"enum\":[1,2,3],\"bool\":true}}";
+
+            Assert.Equal(1, JsonManager.Find<int>("$..enum[0][0]",json));
+        }
+
+        [Fact]
+        public void ExpandPathNamedRootTest()
+        {
+            var json = "{\"foo\":{\"bar\":\"baz\",\"enum\":[1,2,3],\"bool\":true}}";
+
+            Assert.Equal(1, JsonManager.Find<int>("$..enum[0][0]", json));
+        }
+
+
+        [Fact(Skip = "Not implemented yet")]
+        public void ExpandPathWildcardTest()
+        {
+            var json = "{\"foo\":{\"bar\":\"baz\",\"enum\":[1,2,3],\"bool\":true}}";
+
+            var endNode = JsonManager.Find("$.*.enum", json);
             Assert.Equal(1, JsonManager.Parse<int>(endNode));
         }
     }

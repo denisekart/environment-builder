@@ -28,4 +28,20 @@
     <ProjectReference Include="..\..\src\EnvironmentBuilder\EnvironmentBuilder.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <None Update="json1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="json2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="xml1.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="xml2.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -43,6 +43,28 @@ namespace EnvironmentBuilder.Implementation.Json
                 throw new JException("Casting between node or self types is not allowed");
         }
 
+        public static object ConvertToType(object value, Type conversionType)
+        {
+            if (value == null)
+                return null;
+            if (value?.GetType()==conversionType)
+                return value;
+            
+            if (conversionType.IsPrimitive)
+            {
+               return Convert.ChangeType(value, conversionType);
+            }
+            else if (conversionType == typeof(string))
+            {
+                return value?.ToString() is string tx ? (string)tx : default;
+            }
+            else if (conversionType == typeof(DateTime))
+            {
+                return DateTime.TryParse(value?.ToString(), out var r) ? (DateTime)(object)r : default;
+            }
+
+            return Activator.CreateInstance(conversionType);
+        }
         public static bool CanConvertToType(object value, Type conversionType)
         {
             if (conversionType == null)
@@ -83,7 +105,14 @@ namespace EnvironmentBuilder.Implementation.Json
             }
             return null;
         }
-
+        public static Type GetGenericTypeFromEnumerable(Type o)
+        {
+            if (o.IsGenericType && o.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            {
+                return o.GetGenericArguments()[0];
+            }
+            return null;
+        }
         private static IDictionary<Type, MethodInfo> _methodCache=new Dictionary<Type, MethodInfo>
         {
             {typeof(JValueNode),typeof(JUtils)

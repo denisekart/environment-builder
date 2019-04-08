@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace EnvironmentBuilder.Implementation.Json
@@ -24,10 +25,9 @@ namespace EnvironmentBuilder.Implementation.Json
             var node = Parse(value);
             return Parse<T>(node);
         }
-
         public static T Parse<T>(JNode value)
         {
-            if (typeof(IEnumerable).IsAssignableFrom(typeof(T)) && 
+            if (typeof(T) != typeof(string) && typeof(IEnumerable).IsAssignableFrom(typeof(T)) && 
                 value is JEnumerationNode enu)
             {
                 //return ParseEnumerableContract<T>(value);
@@ -66,11 +66,31 @@ namespace EnvironmentBuilder.Implementation.Json
         public static JNode Find(string expression, string json)
         {
             var node = Parse(json);
-            return JSegment.Expand(expression, node);
+            return Find(expression, node);
         }
         public static JNode Find(string expression, JNode json)
         {
             return JSegment.Expand(expression, json);
+        }
+        public static JNode Find(IEnumerable<JSegment> expression, JNode json)
+        {
+            return JSegment.Expand(expression, json);
+        }
+
+        public static T Find<T>(string expression, string json)
+        {
+            var node = Parse(json);
+            return Find<T>(expression, node);
+        }
+        public static T Find<T>(string expression, JNode json)
+        {
+            var result = Find(expression, json);
+            return Parse<T>(result);
+        }
+        public static T Find<T>(IEnumerable<JSegment> expression, JNode json)
+        {
+            var result = Find(expression, json);
+            return Parse<T>(result);
         }
 
     }
