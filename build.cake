@@ -40,6 +40,7 @@ var package=args
 var mainProjectFile=args
    .Default("./src/EnvironmentBuilder/EnvironmentBuilder.csproj")
    .Bundle();
+var nugetApiKey=args.Env("NUGET_API_KEY",false).Throw().Bundle();
 #endregion //ARGUMENTS
 
 #region VARIABLES
@@ -102,7 +103,15 @@ Task("Nuget-Pack")
       Configuration=configuration.Build()
    });
 });
+Task("Nuget-Push")
+.IsDependentOn("Nuget-Pack")
+.Does(()=>{
+   DotNetCoreNuGetPush(package.Build()+"/EnvironmentBuilder*.nupkg", new DotNetCoreNuGetPushSettings{
+      Source = "https://api.nuget.org/v3/index.json",
+      ApiKey = nugetApiKey.Build()
+   });
 
+});
 Task("Test")
 .IsDependentOn("Build")
 .Does(()=>{
@@ -110,7 +119,7 @@ Task("Test")
    var settings = new DotNetCoreTestSettings
      {
          Configuration = configuration.Build(),
-         NoBuild=true
+         NoBuild=true,
      };
    var projectFiles = GetFiles("./tests/**/*.csproj");
    foreach(var file in projectFiles)
@@ -130,8 +139,8 @@ Task("Version")
    Information($"Got versions {asmVer}, {fileVer} and {ver}");
    Information($"Replacing with {version.AssemblySemVer}, {version.AssemblySemFileVer} and {version.MajorMinorPatch}");
    XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/AssemblyVersion",version.AssemblySemVer);
-   XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/AssemblyVersion",version.AssemblySemFileVer);
-   XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/AssemblyVersion",version.MajorMinorPatch);
+   XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/FileVersion",version.AssemblySemFileVer);
+   XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/Version",version.MajorMinorPatch);
 
 });
 Task("Default")
