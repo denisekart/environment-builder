@@ -10,6 +10,7 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>configuration environment arguments json xml parse fluid extension</PackageTags>
     <PackageReleaseNotes>v1</PackageReleaseNotes>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
