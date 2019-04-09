@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net46;net45;net40;net35</TargetFrameworks>
+    <Title>Environment Builder</Title>
     <Authors>Denis Ekart</Authors>
     <Description>Utility for building the application environment using various configuration sources such as arguments, environment variables, json files, xml files etc. Supports a fluid API and is open to configuration and extension. Can easily be integrated with 3rd party tools and utilities.</Description>
     <Copyright>2019 Denis Ekart</Copyright>
     <PackageProjectUrl>https://github.com/denisekart/environment-builder</PackageProjectUrl>
     <RepositoryUrl>https://github.com/denisekart/environment-builder.git</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
+    <RepositoryType>git</RepositoryType>
     <PackageTags>configuration environment arguments json xml parse fluid extension</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
@@ -15,6 +16,7 @@
     <FileVersion>0.1.2.0</FileVersion>
     <Version>0.1.2</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Product>EnvironmentBuilder</Product>
   </PropertyGroup>
 
   <!--<PropertyGroup>

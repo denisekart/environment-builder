@@ -100,7 +100,7 @@ Task("Nuget-Pack")
 .Does(()=>{
    DotNetCorePack(mainProjectFile.Build(),new DotNetCorePackSettings{
       OutputDirectory=package.Build(),
-      Configuration=configuration.Build()
+      Configuration="Release"
    });
 });
 Task("Nuget-Push")
