@@ -4,14 +4,26 @@
     <TargetFrameworks>netstandard2.0;net46;net45;net40;net35</TargetFrameworks>
     <Authors>Denis Ekart</Authors>
     <Description>Utility for building the application environment using various configuration sources such as arguments, environment variables, json files, xml files etc. Supports a fluid API and is open to configuration and extension. Can easily be integrated with 3rd party tools and utilities.</Description>
-    <Copyright>Denis Ekart</Copyright>
-    <PackageProjectUrl>https://denisekart.visualstudio.com/Eki.EnvironmentBuilder</PackageProjectUrl>
-    <RepositoryUrl>https://denisekart.visualstudio.com/Eki.EnvironmentBuilder/_git/Eki.EnvironmentBuilder</RepositoryUrl>
+    <Copyright>2019 Denis Ekart</Copyright>
+    <PackageProjectUrl>https://github.com/denisekart/environment-builder</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/denisekart/environment-builder.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>configuration environment arguments json xml parse fluid extension</PackageTags>
-    <PackageReleaseNotes>v1</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>0.0.0.0</FileVersion>
+    <Version>0.0.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
+
+  <!--<PropertyGroup>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+  </PropertyGroup>-->
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
     <DefineConstants>NETCORE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
@@ -32,6 +44,7 @@
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net35'">
     <DefineConstants>NET35;NETFULL</DefineConstants>
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net35'">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v3.5\Profile\Client</FrameworkPathOverride>
   </PropertyGroup>
 
 </Project>

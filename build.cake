@@ -38,7 +38,7 @@ var package=args
     .Bundle();
 
 var mainProjectFile=args
-   .Default("src/EnvironmentBuilder/EnvironmentBuilder.csproj")
+   .Default("./src/EnvironmentBuilder/EnvironmentBuilder.csproj")
    .Bundle();
 #endregion //ARGUMENTS
 
@@ -65,8 +65,8 @@ Task("Restore")
    });
 
 void BuildTarget(string target){
-var relativeOutputRoot="./../../"+output.Build()+"/"+target;
-Information("Path for target "+target+": "+relativeOutputRoot);
+   var relativeOutputRoot="./../../"+output.Build()+"/"+target;
+   Information("Path for target "+target+": "+relativeOutputRoot);
    MSBuild(File(mainProjectFile.Build()),
    new MSBuildSettings{
       Configuration=configuration.Build(),
@@ -93,6 +93,15 @@ Task("Build")
           }
        });
    });
+Task("Nuget-Pack")
+.IsDependentOn("Version")
+// .IsDependentOn("Build")
+.Does(()=>{
+   DotNetCorePack(mainProjectFile.Build(),new DotNetCorePackSettings{
+      OutputDirectory=package.Build(),
+      Configuration=configuration.Build()
+   });
+});
 
 Task("Test")
 .IsDependentOn("Build")
@@ -108,6 +117,22 @@ Task("Test")
    {
       DotNetCoreTest(file.FullPath, settings);
    }
+});
+
+Task("Version")
+.Does(()=>{
+   var version=GitVersion(new GitVersionSettings{
+      UpdateAssemblyInfo=false
+   });
+   var asmVer=XmlPeek(mainProjectFile.Build(),"/Project/PropertyGroup/AssemblyVersion");
+   var fileVer=XmlPeek(mainProjectFile.Build(),"/Project/PropertyGroup/FileVersion");
+   var ver=XmlPeek(mainProjectFile.Build(),"/Project/PropertyGroup/Version");
+   Information($"Got versions {asmVer}, {fileVer} and {ver}");
+   Information($"Replacing with {version.AssemblySemVer}, {version.AssemblySemFileVer} and {version.MajorMinorPatch}");
+   XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/AssemblyVersion",version.AssemblySemVer);
+   XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/AssemblyVersion",version.AssemblySemFileVer);
+   XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/AssemblyVersion",version.MajorMinorPatch);
+
 });
 Task("Default")
 .Does(()=>{
