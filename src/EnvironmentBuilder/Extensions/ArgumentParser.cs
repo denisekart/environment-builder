@@ -38,7 +38,7 @@ namespace EnvironmentBuilder.Extensions
         {
             return !string.IsNullOrEmpty(arg?.Trim()) && ((arg.StartsWith("--") || arg.StartsWith("-")) && arg.Length - arg.TrimStart('-').Length > 1);
         }
-        private string NormalizeKey(string key)
+        private static string NormalizeKey(string key)
         {
             return key?.ToLower().TrimStart('-');
         }
@@ -95,11 +95,47 @@ namespace EnvironmentBuilder.Extensions
                         _pairs.Add(new Tuple<string, string>(key, value));
                     }
                 }
+
+                if (_floats.Any())
+                {
+                    foreach (var f in _floats)
+                    {
+                        if(KeyEqualsValueParsible(f,out var k,out var v))
+                            _pairs.Add(new Tuple<string, string>(k,v));
+                        else 
+                            _pairs.Add(new Tuple<string, string>(NormalizeKey(f),null));
+                    }
+                }
             }
             finally
             {
                 _arranged = true;
             }
+        }
+
+        private static bool KeyEqualsValueParsible(string raw, out string key, out string value)
+        {
+            key = null;
+            value = null;
+
+            if (raw.Contains("="))
+            {
+                //key=value
+                var parts = raw.Split('=');
+                key = NormalizeKey(parts[0]);
+                if (parts.Length > 1)
+                {
+                    value = string.Join("=", parts.Skip(1).ToArray());
+
+                }
+                if (value?.StartsWith("\"") ?? false)
+                    value = value.Substring(1);
+                if (value?.EndsWith("\"") ?? false)
+                    value = value.Substring(0, value.Length - 1);
+                return true;
+            }
+
+            return false;
         }
 
         public object Value(string name, Type type)

@@ -1,5 +1,4 @@
-#load "build/scripts/args.cake"
-#addin "nuget:?package=EnvironmentBuilder"
+#addin "nuget:?package=EnvironmentBuilder&version=0.1.4"
 using EnvironmentBuilder.Extensions;
 
 #region ARGUMENTS
@@ -13,7 +12,7 @@ var output=env.Arg("output").Arg("o").Env("output").Json("build.output").Default
 var package=env.Arg("packageDirectory").Arg("p").Env("packageDirectory").Json("build.packageDirectory").Default("./packages").Bundle();
 var mainProjectFile=env.Default("./src/EnvironmentBuilder/EnvironmentBuilder.csproj").Bundle();
 var nugetApiKey=env.WithEnvironmentVariable("NUGET_API_KEY",config=>
-config.WithNoEnvironmentVariablePrefix(null)
+config.WithNoEnvironmentVariablePrefix()
 .SetEnvironmmentTarget(EnvironmentVariableTarget.Machine))
 .Throw("Missing nuget api key").Bundle();
 

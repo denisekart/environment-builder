@@ -132,5 +132,20 @@ namespace EnvironmentBuilderTests
             var value = parser.Value("foo", typeof(IEnumerable<string>));
             Assert.True(new[] {"foo","bar"}.SequenceEqual(value as IEnumerable<string>)); 
         }
+
+        [Fact]
+        public void ParseLeftoversTest()
+        {
+            var parser = new ArgumentParser(new[] { "x=y","z","--foo", "foo", "--foo", "bar" });
+            var value = parser.Value("x", typeof(string));
+            Assert.Equal("y",value);
+        }
+        [Fact]
+        public void ParseLeftovers2Test()
+        {
+            var parser = new ArgumentParser(new[] { "x=y", "z", "--foo", "foo", "--foo", "bar" });
+            var value = parser.Value("z", typeof(bool));
+            Assert.Equal(true, value);
+        }
     }
 }
