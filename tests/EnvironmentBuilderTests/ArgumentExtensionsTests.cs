@@ -89,6 +89,43 @@ namespace EnvironmentBuilderTests
         }
 
         [Fact]
+        public void ArgumentParserValueComplex1Test()
+        {
+            var parser = new ArgumentParser(new[] { "--foo=\"foo bar baz\"" });
+            var value = parser.Value("foo", typeof(string));
+            Assert.Equal("foo bar baz", value);
+        }
+        [Fact]
+        public void ArgumentParserValueComplex2Test()
+        {
+            var parser = new ArgumentParser(new[] { "--foo=\"\"foo bar baz\"\"" });
+            var value = parser.Value("foo", typeof(string));
+            Assert.Equal("\"foo bar baz\"", value);
+        }
+        [Fact]
+        public void ArgumentParserValueComplex3Test()
+        {
+            var parser = new ArgumentParser(new[] { "--foo=\" \"" });
+            var value = parser.Value("foo", typeof(string));
+            Assert.Equal(" ", value);
+        }
+
+        [Fact]
+        public void ArgumentParserValueComplex4Test()
+        {
+            var parser = new ArgumentParser(new[] { "--foo=\"\"\"" });
+            var value = parser.Value("foo", typeof(string));
+            Assert.Equal("\"", value);
+        }
+        [Fact]
+        public void ArgumentParserValueComplex5Test()
+        {
+            var parser = new ArgumentParser(new[] { "--foo=\"\"" });
+            var value = parser.Value("foo", typeof(string));
+            Assert.Equal(string.Empty, value);
+        }
+
+        [Fact]
         public void EnumerableStringTest()
         {
             var parser = new ArgumentParser(new[] { "--foo", "foo", "--foo","bar" });

@@ -1,46 +1,22 @@
 #load "build/scripts/args.cake"
-
+#addin "nuget:?package=EnvironmentBuilder"
+using EnvironmentBuilder.Extensions;
 
 #region ARGUMENTS
-var args=new ArgBuilder(Context,"cake_","build.json")
-.Help("This is an utility for setting up the environment")
-.Help("-------------------------------------------------");
+var env=EnvironmentBuilder.EnvironmentManager.Create(config=>
+   config.WithJsonFile("build.json")
+   .WithEnvironmentVariablePrefix("cake_"));
 
-var target = args
-   .Arg("target").Arg("t")
-   .Env("target").File("build.target")
-   .Default("Default")
-   .Help(null,true)
-   .Help("\tThe target to execute")
-   .Bundle();
-var configuration=args
-   .Arg("configuration").Arg("c")
-   .Env("configuration").File("build.configuration")
-   .Default("Debug")
-   .Help(null, true)
-   .Help("\tThe configuration to use")
-   .Bundle();
+var target=env.Arg("target").Arg("t").Env("target").Json("$.build.target").Default("Default").Bundle();
+var configuration=env.Arg("configuration").Arg("c").Env("configuration").Json("build.configuration").Default("Debug").Bundle();
+var output=env.Arg("output").Arg("o").Env("output").Json("build.output").Default("./artifacts").Bundle();
+var package=env.Arg("packageDirectory").Arg("p").Env("packageDirectory").Json("build.packageDirectory").Default("./packages").Bundle();
+var mainProjectFile=env.Default("./src/EnvironmentBuilder/EnvironmentBuilder.csproj").Bundle();
+var nugetApiKey=env.WithEnvironmentVariable("NUGET_API_KEY",config=>
+config.WithNoEnvironmentVariablePrefix(null)
+.SetEnvironmmentTarget(EnvironmentVariableTarget.Machine))
+.Throw("Missing nuget api key").Bundle();
 
-var output=args
-    .Arg("output").Arg("o")
-    .Env("output").File("build.output")
-    .Default("./artifacts")
-    .Help(null,true)
-    .Help("\tThe relative output folder")
-    .Bundle();
-
-var package=args
-    .Arg("packageDirectory").Arg("p")
-    .Env("packageDirectory").File("build.packageDirectory")
-    .Default("./packages")
-    .Help(null,true)
-    .Help("\tThe relative output folder for deployments")
-    .Bundle();
-
-var mainProjectFile=args
-   .Default("./src/EnvironmentBuilder/EnvironmentBuilder.csproj")
-   .Bundle();
-var nugetApiKey=args.Env("NUGET_API_KEY",false).Throw().Bundle();
 #endregion //ARGUMENTS
 
 #region VARIABLES
@@ -65,6 +41,7 @@ Task("Restore")
       DotNetCoreRestore();
    });
 
+//not used at the moment
 void BuildTarget(string target){
    var relativeOutputRoot="./../../"+output.Build()+"/"+target;
    Information("Path for target "+target+": "+relativeOutputRoot);
@@ -95,6 +72,7 @@ Task("Build")
        });
    });
 Task("Nuget-Pack")
+.IsDependentOn("Clean")
 .IsDependentOn("Version")
 // .IsDependentOn("Build")
 .Does(()=>{
@@ -127,7 +105,6 @@ Task("Test")
       DotNetCoreTest(file.FullPath, settings);
    }
 });
-
 Task("Version")
 .Does(()=>{
    var version=GitVersion(new GitVersionSettings{
@@ -141,19 +118,26 @@ Task("Version")
    XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/AssemblyVersion",version.AssemblySemVer);
    XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/FileVersion",version.AssemblySemFileVer);
    XmlPoke(mainProjectFile.Build(),"/Project/PropertyGroup/Version",version.MajorMinorPatch);
-
 });
 Task("Default")
+.IsDependentOn("Test")
 .Does(()=>{
    Information("Running default task...");
+   // Information(target.Build());
+   // Information(configuration.Build());
+   // Information(output.Build());
+   // Information(package.Build());
+   // Information(mainProjectFile.Build());
+   // Information(nugetApiKey.Build());
 });
+
 
 #endregion //TASKS
 
 #region MISC
 Task("Help")
 .Does(()=>{
-   Information(args.Help());
+   Information(env.Help());
    });
 
 #endregion //MISC

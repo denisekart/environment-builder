@@ -127,7 +127,7 @@ namespace EnvironmentBuilder.Extensions
         /// <param name="builder"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static IEnvironmentBuilder Throw(this IEnvironmentBuilder builder, string message)
+        public static IEnvironmentBuilder Throw(this IEnvironmentBuilder builder, string message=null)
         {
             return builder.WithException(message);
         }

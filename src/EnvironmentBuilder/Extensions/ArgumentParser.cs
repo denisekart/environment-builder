@@ -36,7 +36,7 @@ namespace EnvironmentBuilder.Extensions
         /// <returns></returns>
         private static bool IsOption(string arg)
         {
-            return !string.IsNullOrEmpty(arg?.Trim()) && (arg.StartsWith("--") || arg.StartsWith("-") && arg.Length - arg.TrimStart('-').Length > 2);
+            return !string.IsNullOrEmpty(arg?.Trim()) && ((arg.StartsWith("--") || arg.StartsWith("-")) && arg.Length - arg.TrimStart('-').Length > 1);
         }
         private string NormalizeKey(string key)
         {
@@ -67,7 +67,14 @@ namespace EnvironmentBuilder.Extensions
                             if (parts.Length > 1)
                             {
                                 value = string.Join("=", parts.Skip(1).ToArray());
+                                
                             }
+                            if (value?.StartsWith("\"") ?? false)
+                                value = value.Substring(1);
+                            if (value?.EndsWith("\"") ?? false)
+                                value = value.Substring(0, value.Length - 1);
+                            //value = value?.TrimStart('"');
+                            //value = value?.TrimEnd('"');
                         }
                         else if (index + 1 < _args.Length &&
                                  !IsOption(_args[index + 1]))

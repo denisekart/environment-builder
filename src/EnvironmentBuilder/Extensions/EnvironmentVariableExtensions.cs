@@ -44,7 +44,7 @@ namespace EnvironmentBuilder.Extensions
         /// <param name="prefix"></param>
         /// <returns></returns>
         public static IEnvironmentConfiguration WithNoEnvironmentVariablePrefix(
-            this IEnvironmentConfiguration configuration, string prefix)
+            this IEnvironmentConfiguration configuration)
         {
             return configuration.SetValue<string>(Constants.EnvironmentVariablePrefixKey, null);
         }
@@ -85,25 +85,28 @@ namespace EnvironmentBuilder.Extensions
 
             });
         }
+
         /// <summary>
         /// Shorthand for <see cref="WithEnvironmentVariable"/>
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="name"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IEnvironmentBuilder Env(this IEnvironmentBuilder builder, string name)
+        public static IEnvironmentBuilder Env(this IEnvironmentBuilder builder, string name, Action<IEnvironmentConfiguration> configuration = null)
         {
-            return builder.WithEnvironmentVariable(name);
+            return builder.WithEnvironmentVariable(name,configuration);
         }
+
         /// <summary>
         /// Shorthand alias for <see cref="WithEnvironmentVariable"/> using the common key set beforehand
         /// <seealso cref="CommonExtensions.WithCommonKey"/>
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static IEnvironmentBuilder Env(this IEnvironmentBuilder builder)
+        public static IEnvironmentBuilder Env(this IEnvironmentBuilder builder, Action<IEnvironmentConfiguration> configuration = null)
         {
-            return builder.WithEnvironmentVariable(builder.Configuration.GetCommonKey());
+            return builder.WithEnvironmentVariable(builder.Configuration.GetCommonKey(),configuration);
         }
         
     }

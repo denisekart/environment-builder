@@ -62,7 +62,7 @@ namespace EnvironmentBuilder.Extensions
                 var parser = cfg.GetValue<JsonFileParser>(typeof(JsonFileParser).FullName);
                 return parser.Value(expr, reqType);
 
-            });
+            },cfg=>cfg.Trace($"[json]{jPath}"));
         }
         /// <summary>
         /// This is a shorthand for the <see cref="WithJson"/>
