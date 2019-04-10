@@ -80,7 +80,7 @@ namespace EnvironmentBuilderTests
             Assert.Equal(true.ToString(), value);
         }
 
-        [Fact]
+        [Fact] 
         public void ArgumentParserValueCaseInsensitiveTest()
         {
             var parser = new ArgumentParser(new[] { "--foo=foo", "--bar" });
