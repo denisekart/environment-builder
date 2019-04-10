@@ -8,7 +8,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using EnvironmentBuilder.Implementation.Json;
 
-namespace EnvironmentBuilder.Extensions
+namespace EnvironmentBuilder.Implementation
 {
     internal class XmlFileParser
     {

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using EnvironmentBuilder.Abstractions;
+using EnvironmentBuilder.Implementation;
 using EnvironmentBuilder.Implementation.Json;
 
 namespace EnvironmentBuilder.Extensions

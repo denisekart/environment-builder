@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using EnvironmentBuilder.Abstractions;
+using EnvironmentBuilder.Extensions;
 using EnvironmentBuilder.Implementation;
 
 [assembly:InternalsVisibleTo("EnvironmentBuilderTests")]
@@ -17,7 +18,7 @@ namespace EnvironmentBuilder
 
         internal EnvironmentManager()
         {
-            
+            _configuration.WithNoopLogger();
         }
         internal EnvironmentManager(Action<IEnvironmentConfiguration> configuration) :this()
         {

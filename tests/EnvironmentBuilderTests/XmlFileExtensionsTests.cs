@@ -1,5 +1,6 @@
 ﻿using EnvironmentBuilder;
 using EnvironmentBuilder.Extensions;
+using EnvironmentBuilder.Implementation;
 using Xunit;
 
 namespace EnvironmentBuilderTests

@@ -137,6 +137,7 @@ Task("Default")
 #region MISC
 Task("Help")
 .Does(()=>{
+   Information($"Showing info for version {GitVersion().FullSemVer}");
    Information(env.Help());
    });
 
