@@ -84,9 +84,10 @@ Task("Nuget-Pack")
 Task("Nuget-Push")
 .IsDependentOn("Nuget-Pack")
 .Does(()=>{
-   DotNetCoreNuGetPush(package.Build()+"/EnvironmentBuilder*.nupkg", new DotNetCoreNuGetPushSettings{
+   DotNetCoreNuGetPush("EnvironmentBuilder.*.nupkg", new DotNetCoreNuGetPushSettings{
       Source = "https://api.nuget.org/v3/index.json",
-      ApiKey = nugetApiKey.Build()
+      ApiKey = nugetApiKey.Build(),
+      WorkingDirectory=package.Build()
    });
 
 });
