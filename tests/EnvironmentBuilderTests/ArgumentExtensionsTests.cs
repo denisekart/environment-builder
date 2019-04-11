@@ -2,6 +2,7 @@
 using System.Linq;
 using EnvironmentBuilder;
 using EnvironmentBuilder.Extensions;
+using EnvironmentBuilder.Implementation;
 using EnvironmentBuilder.Implementation.Json;
 using Xunit;
 
