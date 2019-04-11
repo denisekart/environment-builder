@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+using System.IO;
 using EnvironmentBuilder.Abstractions;
 using EnvironmentBuilder.Implementation;
 
@@ -13,17 +11,17 @@ namespace EnvironmentBuilder.Extensions
         /// Adds a logger to the pipeline
         /// </summary>
         /// <param name="configuration"></param>
-        /// <param name="loggerFascade"></param>
+        /// <param name="loggerFacade"></param>
         /// <param name="level"></param>
         /// <returns></returns>
         public static IEnvironmentConfiguration WithLogger(this IEnvironmentConfiguration configuration,
-            ILoggerFascade loggerFascade, LogLevel level)
+            ILoggerFacade loggerFacade, LogLevel level)
         {
-            if(loggerFascade==null)
-                throw new ArgumentException("Cannot set a null logger fascade",nameof(loggerFascade));
+            if(loggerFacade==null)
+                throw new ArgumentException("Cannot set a null logger facade",nameof(loggerFacade));
 
-            loggerFascade.LogLevel = level;
-            return configuration.SetValue(typeof(ILoggerFascade).FullName,(ILoggerFascade)loggerFascade);
+            loggerFacade.LogLevel = level;
+            return configuration.SetValue(typeof(ILoggerFacade).FullName,(ILoggerFacade)loggerFacade);
         }
         /// <summary>
         /// Adds the default console logger to the pipeline
@@ -33,7 +31,19 @@ namespace EnvironmentBuilder.Extensions
         /// <returns></returns>
         public static IEnvironmentConfiguration WithConsoleLogger(this IEnvironmentConfiguration configuration, LogLevel level=LogLevel.Information)
         {
-            return configuration.WithLogger(new ConsoleLoggerFascade(),level);
+            return configuration.WithLogger(new ConsoleLoggerFacade(),level);
+        }
+
+        /// <summary>
+        /// Adds a text writer logger to the pipeline
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="writer"></param>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public static IEnvironmentConfiguration WithTextWriterLogger(this IEnvironmentConfiguration configuration,TextWriter writer, LogLevel level = LogLevel.Information)
+        {
+            return configuration.WithLogger(new TextWriterLoggerFacade(writer), level);
         }
         /// <summary>
         /// Adds a No-Op logger to the pipeline. This logger does nothing.
@@ -43,7 +53,7 @@ namespace EnvironmentBuilder.Extensions
         /// <returns></returns>
         public static IEnvironmentConfiguration WithNoopLogger(this IEnvironmentConfiguration configuration)
         {
-            return configuration.WithLogger(new NoopLoggerFascade(),LogLevel.Off);
+            return configuration.WithLogger(new NoopLoggerFacade(),LogLevel.Off);
         }
 
         /// <summary>
@@ -52,12 +62,10 @@ namespace EnvironmentBuilder.Extensions
         /// <param name="configuration"></param>
         /// <param name="level"></param>
         /// <param name="message"></param>
-        public static void Log(this IEnvironmentConfiguration configuration, LogLevel level, object message)
+        public static void Log(this IReadonlyEnvironmentConfiguration configuration, LogLevel level, object message)
         {
-            if (configuration.HasValue(typeof(ILoggerFascade).FullName))
-                configuration.GetValue<ILoggerFascade>(typeof(ILoggerFascade).FullName)?.Log(level, message);
-            else
-                configuration.WithNoopLogger();
+            if (configuration.HasValue(typeof(ILoggerFacade).FullName))
+                configuration.GetValue<ILoggerFacade>(typeof(ILoggerFacade).FullName)?.Log(level, message);
         }
 
         /// <summary>
@@ -65,7 +73,7 @@ namespace EnvironmentBuilder.Extensions
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="message"></param>
-        public static void LogTrace(this IEnvironmentConfiguration configuration, object message)
+        public static void LogTrace(this IReadonlyEnvironmentConfiguration configuration, object message)
         {
             configuration.Log(LogLevel.Trace,message);
         }
@@ -84,7 +92,7 @@ namespace EnvironmentBuilder.Extensions
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="message"></param>
-        public static void LogDebug(this IEnvironmentConfiguration configuration, object message)
+        public static void LogDebug(this IReadonlyEnvironmentConfiguration configuration, object message)
         {
             configuration.Log(LogLevel.Debug, message);
         }
@@ -104,7 +112,7 @@ namespace EnvironmentBuilder.Extensions
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="message"></param>
-        public static void LogInformation(this IEnvironmentConfiguration configuration, object message)
+        public static void LogInformation(this IReadonlyEnvironmentConfiguration configuration, object message)
         {
             configuration.Log(LogLevel.Information, message);
         }
@@ -123,7 +131,7 @@ namespace EnvironmentBuilder.Extensions
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="message"></param>
-        public static void LogWarning(this IEnvironmentConfiguration configuration, object message)
+        public static void LogWarning(this IReadonlyEnvironmentConfiguration configuration, object message)
         {
             configuration.Log(LogLevel.Warning, message);
         }
@@ -142,7 +150,7 @@ namespace EnvironmentBuilder.Extensions
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="message"></param>
-        public static void LogError(this IEnvironmentConfiguration configuration, object message)
+        public static void LogError(this IReadonlyEnvironmentConfiguration configuration, object message)
         {
             configuration.Log(LogLevel.Error, message);
         }
@@ -161,7 +169,7 @@ namespace EnvironmentBuilder.Extensions
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="message"></param>
-        public static void LogFatal(this IEnvironmentConfiguration configuration, object message)
+        public static void LogFatal(this IReadonlyEnvironmentConfiguration configuration, object message)
         {
             configuration.Log(LogLevel.Fatal, message);
         }

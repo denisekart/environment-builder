@@ -2,7 +2,7 @@
 
 namespace EnvironmentBuilder.Implementation
 {
-    internal class NoopLoggerFascade : ILoggerFascade
+    internal class NoopLoggerFacade : ILoggerFacade
     {
         public LogLevel LogLevel { get; set; } = LogLevel.Off;
         public void Log(LogLevel level, object message)

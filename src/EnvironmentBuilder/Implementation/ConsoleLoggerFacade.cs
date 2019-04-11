@@ -3,8 +3,11 @@ using EnvironmentBuilder.Abstractions;
 
 namespace EnvironmentBuilder.Implementation
 {
-    internal class ConsoleLoggerFascade : ILoggerFascade
+    internal class ConsoleLoggerFacade : ILoggerFacade
     {
+        
+
+
         public LogLevel LogLevel { get; set; } = LogLevel.Information;
         public bool WriteExceptionsToStdError { get; set; } = false;
         public void Log(LogLevel level, object message)
@@ -12,22 +15,22 @@ namespace EnvironmentBuilder.Implementation
             var l = (int) LogLevel;
             switch (level)
             {
-                case LogLevel.Fatal when l<=(int)Abstractions.LogLevel.Fatal:
+                case LogLevel.Fatal when l>=(int)Abstractions.LogLevel.Fatal:
                     EmitFatal(message);
                     break;
-                case LogLevel.Error when l <= (int)Abstractions.LogLevel.Error:
+                case LogLevel.Error when l >= (int)Abstractions.LogLevel.Error:
                     EmitError(message);
                     break;
-                case LogLevel.Warning when l <= (int)Abstractions.LogLevel.Warning:
+                case LogLevel.Warning when l >= (int)Abstractions.LogLevel.Warning:
                     EmitWarning(message);
                     break;
-                case LogLevel.Information when l <= (int)Abstractions.LogLevel.Information:
+                case LogLevel.Information when l >= (int)Abstractions.LogLevel.Information:
                     EmitInformation(message);
                     break;
-                case LogLevel.Debug when l <= (int)Abstractions.LogLevel.Debug:
+                case LogLevel.Debug when l >= (int)Abstractions.LogLevel.Debug:
                     EmitDebug(message);
                     break;
-                case LogLevel.Trace when l <= (int)Abstractions.LogLevel.Trace:
+                case LogLevel.Trace when l >= (int)Abstractions.LogLevel.Trace:
                     EmitTrace(message);
                     break;
                 case LogLevel.Off:
