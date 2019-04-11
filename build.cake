@@ -1,4 +1,4 @@
-#addin "nuget:?package=EnvironmentBuilder&version=0.1.4"
+#addin "nuget:?package=EnvironmentBuilder&version=0.2.0"
 using EnvironmentBuilder.Extensions;
 
 #region ARGUMENTS
