@@ -123,12 +123,6 @@ Task("Default")
 .IsDependentOn("Test")
 .Does(()=>{
    Information("Running default task...");
-   // Information(target.Build());
-   // Information(configuration.Build());
-   // Information(output.Build());
-   // Information(package.Build());
-   // Information(mainProjectFile.Build());
-   // Information(nugetApiKey.Build());
 });
 
 

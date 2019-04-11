@@ -56,7 +56,9 @@ namespace EnvironmentBuilder.Extensions
         /// <returns></returns>
         public static string GetEnvironmentVariablePrefix(this IReadonlyEnvironmentConfiguration configuration)
         {
-            return configuration.GetValue(Constants.EnvironmentVariablePrefixKey);
+            return configuration.HasValue(Constants.EnvironmentVariablePrefixKey)
+                ?configuration.GetValue(Constants.EnvironmentVariablePrefixKey)
+                :null;
         }
         /// <summary>
         /// Adds the environment variable source to te pipe
