@@ -34,6 +34,9 @@
     <None Update="json1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="json3.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="json2.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -40,7 +40,7 @@ build.ps1 --target=Build
 
 Check out the [complete documentation](docs/DOCUMENTATION.md).
 
-The main idea behind the environment builder is to combine various application entry points and configuration sources and combine them into a single "pipe".
+The main idea behind the environment builder is to bootstrap various application entry points and configuration sources and combine them into a single "pipe".
 
 A simple use case example:
 ```csharp

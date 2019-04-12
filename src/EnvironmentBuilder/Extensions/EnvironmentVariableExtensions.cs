@@ -69,6 +69,12 @@ namespace EnvironmentBuilder.Extensions
         /// <returns></returns>
         public static IEnvironmentBuilder WithEnvironmentVariable(this IEnvironmentBuilder builder, string name, Action<IEnvironmentConfiguration> configuration=null)
         {
+            if (!builder.Configuration.HasValue(typeof(EnvironmentVariableParser).FullName))
+            {
+                builder.WithConfiguration(cfg => cfg.SetValue(typeof(EnvironmentVariableParser).FullName,
+                    new EnvironmentVariableParser()));
+            }
+
             return builder.WithSource(cfg =>
             {
                 var parser = cfg.GetValue<EnvironmentVariableParser>(typeof(EnvironmentVariableParser).FullName);
@@ -80,11 +86,11 @@ namespace EnvironmentBuilder.Extensions
             {
                 configuration?.Invoke(cfg);
                 cfg.Trace($"[environment]{name}");
-                if (!cfg.HasValue(typeof(EnvironmentVariableParser).FullName))
-                {
-                    cfg.SetValue(typeof(EnvironmentVariableParser).FullName,
-                        new EnvironmentVariableParser());
-                }
+                //if (!cfg.HasValue(typeof(EnvironmentVariableParser).FullName))
+                //{
+                //    cfg.SetValue(typeof(EnvironmentVariableParser).FullName,
+                //        new EnvironmentVariableParser());
+                //}
 
             });
         }

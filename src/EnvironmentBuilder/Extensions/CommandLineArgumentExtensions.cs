@@ -15,6 +15,11 @@ namespace EnvironmentBuilder.Extensions
         /// <returns></returns>
         public static IEnvironmentBuilder WithArgument(this IEnvironmentBuilder builder,string name,Action<IEnvironmentConfiguration> configuration=null)
         {
+            if (!builder.Configuration.HasValue(typeof(ArgumentParser).FullName))
+            {
+                builder.WithConfiguration(cfg => cfg.SetValue(typeof(ArgumentParser).FullName,
+                    new ArgumentParser(Environment.GetCommandLineArgs())));
+            }
             return builder.WithSource(cfg =>
             {
                 var parser = cfg.GetValue<ArgumentParser>(typeof(ArgumentParser).FullName);
@@ -24,11 +29,11 @@ namespace EnvironmentBuilder.Extensions
             {
                 configuration?.Invoke(cfg);
                 cfg.Trace($"[argument]{name}");
-                if (!cfg.HasValue(typeof(ArgumentParser).FullName))
-                {
-                    cfg.SetValue(typeof(ArgumentParser).FullName, 
-                        new ArgumentParser(Environment.GetCommandLineArgs()));
-                }
+                //if (!cfg.HasValue(typeof(ArgumentParser).FullName))
+                //{
+                //    cfg.SetValue(typeof(ArgumentParser).FullName, 
+                //        new ArgumentParser(Environment.GetCommandLineArgs()));
+                //}
 
             });
         }
