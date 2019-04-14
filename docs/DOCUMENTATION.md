@@ -308,7 +308,11 @@ namespace EnvironmentBuilderRandomContrib.Extensions
                 saver.Prev += nextValue;
                 return oldKey;
 
-            }, config => config.Trace("[my random source]"));
+            }, config => 
+            {
+              //this configuration is specific to that source
+              config.Trace("[my random source]")
+            });
         }
         // this is just an example class that holds the previous value
         //a more suitable approach would be to save the value itself to the configuration

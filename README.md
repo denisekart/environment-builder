@@ -128,6 +128,12 @@ using EnvironmentBuilder.Extensions;
 
 We use Cake build for build automation. Use the target "Build" for building the source. (*our Cake scripts use our own environment builder utility for setting up the environment*).
 
-TODO:
 
-This is a work in progress. Will be completed till May 1st 2019. Package is fully functional but not yet documented. Feel free to run unit tests using the default task in the Cake build.
+## License
+
+This project is licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Author 
+
+Denis Ekart ([email me](mailto:denis.ekart@gmail.com))
