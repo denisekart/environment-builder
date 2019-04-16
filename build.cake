@@ -32,6 +32,13 @@ Task("Clean")
          DeleteDirectory(output.Build(),new DeleteDirectorySettings{Recursive=true});
       if(DirectoryExists(package.Build()))
          DeleteDirectory(package.Build(),new DeleteDirectorySettings{Recursive=true});
+
+         var projectFiles = GetFiles("./tests/**/*.csproj")
+         .Union(GetFiles("./src/**/*.csproj"));
+      foreach(var file in projectFiles)
+      {
+         DotNetCoreClean(file.FullPath);
+      }
    });
 Task("Restore")
    .Description("Runs the nuget restore task")

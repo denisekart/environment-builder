@@ -10,8 +10,8 @@ namespace EnvironmentBuilder.Extensions
         /// Adds the command line argument source to the pipe
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="name"></param>
-        /// <param name="configuration"></param>
+        /// <param name="name">the argument name</param>
+        /// <param name="configuration">additional configurration scoped to the argument</param>
         /// <returns></returns>
         public static IEnvironmentBuilder WithArgument(this IEnvironmentBuilder builder,string name,Action<IEnvironmentConfiguration> configuration=null)
         {
@@ -28,7 +28,7 @@ namespace EnvironmentBuilder.Extensions
             },cfg =>
             {
                 configuration?.Invoke(cfg);
-                cfg.Trace($"[argument]{name}");
+                cfg.WithTrace($"{name}","argument");
                 //if (!cfg.HasValue(typeof(ArgumentParser).FullName))
                 //{
                 //    cfg.SetValue(typeof(ArgumentParser).FullName, 
@@ -37,19 +37,32 @@ namespace EnvironmentBuilder.Extensions
 
             });
         }
+
         /// <summary>
-        /// Shorthand alias for <see cref="WithArgument"/>
+        /// Shorthand alias for "WithArgument"
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="name"></param>
+        /// <param name="name">the argument name</param>
+        /// <param name="configuration">the scoped configuration to add</param>
+        /// <returns></returns>
+        public static IEnvironmentBuilder Arg(this IEnvironmentBuilder builder, string name,Action<IEnvironmentConfiguration> configuration)
+        {
+            return builder.WithArgument(name,configuration);
+        }
+
+        /// <summary>
+        /// Shorthand alias for "WithArgument"
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="name">the argument name</param>
         /// <returns></returns>
         public static IEnvironmentBuilder Arg(this IEnvironmentBuilder builder, string name)
         {
             return builder.WithArgument(name);
         }
         /// <summary>
-        /// Shorthand alias for <see cref="WithArgument"/> using the common key set beforehand
-        /// <seealso cref="CommonExtensions.WithCommonKey"/>
+        /// Shorthand alias for "WithArgument" using the common key set beforehand
+        /// See also "CommonExtensions.WithCommonKey"
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>

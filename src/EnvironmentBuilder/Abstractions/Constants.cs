@@ -16,6 +16,10 @@
         /// </summary>
         public const string SourceDescriptionValueKey = KeyPrefix + "Source.Description";
         /// <summary>
+        /// The key used to store the description for the global builder
+        /// </summary>
+        public const string GlobalDescriptionValueKey = KeyPrefix + "Global.Description";
+        /// <summary>
         /// The key used to store the environment variable target for the source
         /// </summary>
         public const string EnvironmentVariableTargetKey = KeyPrefix + "Source.EnvironmentVariableTarget";

@@ -12,12 +12,11 @@ namespace EnvironmentBuilder.Implementation
         {
             public Func<IEnvironmentConfiguration, object> SourceItem;
             public IEnvironmentConfiguration Configuration;
-            public bool IsValid;
         }
         private IList<Source> _orderedSources=new List<Source>();
         public void AddSource<T>(Func<IReadonlyEnvironmentConfiguration, T> source, IEnvironmentConfiguration configuration)
         {
-            _orderedSources.Add(new Source{Configuration = configuration,SourceItem = cfg=>source.Invoke(cfg), IsValid = true});
+            _orderedSources.Add(new Source{Configuration = configuration,SourceItem = cfg=>source.Invoke(cfg)});
         }
 
         public IEnumerable<IReadonlyEnvironmentConfiguration> Sources => _orderedSources.Select(x => x.Configuration).ToArray();

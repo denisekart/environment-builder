@@ -12,12 +12,11 @@ namespace EnvironmentBuilder.Extensions
     {
         /// <summary>
         /// Adds the xml file to the configuration. Multiple different files can be added.
-        /// 
         /// </summary>
         /// <param name="configuration"></param>
-        /// <param name="file"></param>
+        /// <param name="file">the file to use</param>
         /// <param name="namespaces">The xml namespaces to load</param>
-        /// <param name="eagerLoad"></param>
+        /// <param name="eagerLoad">if the file should be eagerly loaded rather than lazily loaded</param>
         /// <returns></returns>
         public static IEnvironmentConfiguration WithXmlFile(this IEnvironmentConfiguration configuration, string file,
             IDictionary<string, string> namespaces = null, bool eagerLoad = false)
@@ -59,26 +58,26 @@ namespace EnvironmentBuilder.Extensions
         /// Adds the xml file to the pipe
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="xPath"></param>
-        /// <param name="file"></param>
+        /// <param name="xPath">the xpath to retrieve</param>
+        /// <param name="file">the optional file to use</param>
         /// <returns></returns>
         public static IEnvironmentBuilder WithXml(this IEnvironmentBuilder builder, string xPath, string file=null)
         {
             return builder.WithSource(cfg =>
             {
                 if (!cfg.HasValue(typeof(XmlFileParser).FullName))
-                    return null;//no json file parser was registered
+                    return null;//no xml file parser was registered
                 var reqType = cfg.GetBuildType();
                 var parser = cfg.GetValue<XmlFileParser>(typeof(XmlFileParser).FullName);
                 return parser.Value(xPath,reqType, file);
-            });
+            },cfg=>cfg.WithTrace(xPath,"xml"));
         }
         /// <summary>
-        /// This is a shorthand for the <see cref="WithXml"/>
+        /// This is a shorthand for the "WithXml"
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="xPath"></param>
-        /// <param name="file"></param>
+        /// <param name="xPath">the xpath to retrieve</param>
+        /// <param name="file">the optional file to use</param>
         /// <returns></returns>
         public static IEnvironmentBuilder Xml(this IEnvironmentBuilder builder, string xPath, string file = null)
         {

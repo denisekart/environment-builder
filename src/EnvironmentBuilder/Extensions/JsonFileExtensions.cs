@@ -14,8 +14,8 @@ namespace EnvironmentBuilder.Extensions
         /// Use root expression syntax for file selection <example>$(filename).some.path</example>
         /// </summary>
         /// <param name="configuration"></param>
-        /// <param name="file"></param>
-        /// <param name="eagerLoad"></param>
+        /// <param name="file">the file to use</param>
+        /// <param name="eagerLoad">load the file eagerly instead of lazily</param>
         /// <returns></returns>
         public static IEnvironmentConfiguration WithJsonFile(this IEnvironmentConfiguration configuration, string file, bool eagerLoad=false)
         {
@@ -49,7 +49,7 @@ namespace EnvironmentBuilder.Extensions
         /// Adds the json file to the pipeline
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="jPath"></param>
+        /// <param name="jPath">the json path to extract</param>
         /// <returns></returns>
         public static IEnvironmentBuilder WithJson(this IEnvironmentBuilder builder, string jPath)
         {
@@ -63,13 +63,13 @@ namespace EnvironmentBuilder.Extensions
                 var parser = cfg.GetValue<JsonFileParser>(typeof(JsonFileParser).FullName);
                 return parser.Value(expr, reqType);
 
-            },cfg=>cfg.Trace($"[json]{jPath}"));
+            },cfg=>cfg.WithTrace(jPath, "json"));
         }
         /// <summary>
-        /// This is a shorthand for the <see cref="WithJson"/>
+        /// This is a shorthand for the "WithJson"
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="jPath"></param>
+        /// <param name="jPath">the json path to extract</param>
         /// <returns></returns>
         public static IEnvironmentBuilder Json(this IEnvironmentBuilder builder, string jPath)
         {

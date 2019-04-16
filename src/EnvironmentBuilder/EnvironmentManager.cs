@@ -44,6 +44,8 @@ namespace EnvironmentBuilder
             configuration?.Invoke(_configuration);
             return this;
         }
+        
+
         /// <summary>
         /// Adds the source to the pipeline
         /// </summary>

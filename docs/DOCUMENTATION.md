@@ -22,13 +22,14 @@ This utility has no 3rd party dependencies.
       - [Extensibility](#extensibility)
     - [Extensions](#extensions)
       - [Common Extensions](#common-extensions)
+      - [Annotation Extensions](#annotation-extensions)
       - [Logging Extensions](#logging-extensions)
       - [Argument Extensions](#argument-extensions)
       - [Environment Variable Extensions](#environment-variable-extensions)
       - [Json File Extensions](#json-file-extensions)
       - [Xml File Extensions](#xml-file-extensions)
       - [Future Work](#future-work)
-    - [Contributions](#contributions)
+    - [Contribute](#contribute)
 
 ---
 
@@ -289,6 +290,7 @@ namespace EnvironmentBuilderRandomContrib.Extensions
         public static IEnvironmentConfiguration WithRandomNumberGenerator(this IEnvironmentConfiguration configuration,
             Random random)
         {
+          //using a factory for random numbers
             return configuration.SetFactoryValue(RngKey, () => random.Next());
         }
         // this method will be used to get the next randomly incremented number
@@ -296,6 +298,8 @@ namespace EnvironmentBuilderRandomContrib.Extensions
         {
             if (!builder.Configuration.HasValue(SaverKey))
             {
+              //using configuration values to store the "NumberSaver"
+              // this configuration is "global"
                 builder.WithConfiguration(cfg => cfg.SetValue(SaverKey, new NumberSaver()));
             }
 
@@ -310,8 +314,8 @@ namespace EnvironmentBuilderRandomContrib.Extensions
 
             }, config => 
             {
-              //this configuration is specific to that source
-              config.Trace("[my random source]")
+              //this configuration is "specific" to that source
+              config.WithTrace("my random value","my random source")
             });
         }
         // this is just an example class that holds the previous value
@@ -345,36 +349,57 @@ Assert.True(next4>next3);
 
 ### Extensions
 
-TODO: Describe the purpose of the extensions - just the basics
+Extension methods provide a means to wrap various actions in a single logical extension. See chapter [Extensibility](#Extensibility) for an example.
+
+There are quite a few such extensions implemented in the core package under the namespace `EnvironmentBuilder.Extensions`.
 
 #### Common Extensions
+Provide common core functionalities that are and can be useful in any other extension.
 
-TODO
+See [method descriptions](generated/_CommonExtensions.md).
+
+#### Annotation Extensions
+Provide functionality to annotate the sources, bundler and environament builders
+
+See [method descriptions](generated/_AnnotationExtensions.md).
 
 #### Logging Extensions
+Provide functionalities related to logging.
 
-TODO
+See [method descriptions](generated/_LoggingExtensions.md).
 
 #### Argument Extensions
+Provide the default command line argument parsers and sources.
 
-TODO
+See [method descriptions](generated/_CommandLineArgumentExtensions.md).
 
 #### Environment Variable Extensions
+Provide the default environment variable parsers and sources. The environment variables can be retrieved from the current process, the user or the machine.
 
-TODO
+See [method descriptions](generated/_EnvironmentVariableExtensions.md).
 
 #### Json File Extensions
+Provide the default json file parsers and sources. Simple and complex types can be parsed. The values are parsed using the [JSON path](https://goessner.net/articles/JsonPath/) notation. Multiple json files are supported at once.
 
-TODO
+See [method descriptions](generated/_JsonFileExtensions.md).
 
 #### Xml File Extensions
+Provide the default xml file parsers and sources. Simple types and enumerations can be parsed. The values are parsed using the XPath expressions. Multiple xml files are supported at once.
 
-TODO
+See [method descriptions](generated/_XmlFileExtensions.md).
 
 #### Future Work
+I have absolutely no idea when but...
+- SQL database parsers and sources
+- Redis KV store parsers and sources
+- [Sky is the limit]
 
-TODO: Describe future work
+### Contribute
+If you would like to contribute to this project just submit a PR.
 
-### Contributions
-
-TODO: Describe how to contribute
+Here are some basic sanity rules to follow:
+- The added functionality should be unit tested extensively
+- No external dependencies should be added
+- The funcionality should be implemented in all of the supported frameworks
+- The core (EnvironmentManager) should not be modified (contact me if you think it should be - i'm open to suggestion)
+- The copied, referenced or otherwise borrowed code should have a license no more restrictive than the MIT license

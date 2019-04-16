@@ -7,12 +7,11 @@ namespace EnvironmentBuilder.Extensions
     public static class EnvironmentVariableExtensions
     {
         /// <summary>
-        /// Sets the target for the environment variable resolvation
+        /// Sets the target for the environment variable resolution
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="configuration"></param>
-        /// <param name="target"></param>
-        public static void SetEnvironmmentTarget(this IEnvironmentConfiguration configuration, EnvironmentVariableTarget target)
+        /// <param name="target">the target to use</param>
+        public static void SetEnvironmentTarget(this IEnvironmentConfiguration configuration, EnvironmentVariableTarget target)
         {
             configuration.SetValue(Constants.EnvironmentVariableTargetKey, target);
         }
@@ -20,7 +19,7 @@ namespace EnvironmentBuilder.Extensions
         /// Gets the value of the environment variable store used
         /// </summary>
         /// <param name="configuration"></param>
-        /// <returns></returns>
+        /// <returns>the target currently used</returns>
         public static EnvironmentVariableTarget GetEnvironmentTarget(this IReadonlyEnvironmentConfiguration configuration)
         {
             return configuration.HasValue(Constants.EnvironmentVariableTargetKey)
@@ -31,7 +30,7 @@ namespace EnvironmentBuilder.Extensions
         /// Sets the environment variable prefix to the source or environment
         /// </summary>
         /// <param name="configuration"></param>
-        /// <param name="prefix"></param>
+        /// <param name="prefix">the prefix to use</param>
         /// <returns></returns>
         public static IEnvironmentConfiguration WithEnvironmentVariablePrefix(
             this IEnvironmentConfiguration configuration, string prefix)
@@ -53,7 +52,7 @@ namespace EnvironmentBuilder.Extensions
         /// Gets the environment variable prefix. Defaults to null
         /// </summary>
         /// <param name="configuration"></param>
-        /// <returns></returns>
+        /// <returns>the prefix currently being used or null</returns>
         public static string GetEnvironmentVariablePrefix(this IReadonlyEnvironmentConfiguration configuration)
         {
             return configuration.HasValue(Constants.EnvironmentVariablePrefixKey)
@@ -64,8 +63,8 @@ namespace EnvironmentBuilder.Extensions
         /// Adds the environment variable source to te pipe
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="name"></param>
-        /// <param name="configuration"></param>
+        /// <param name="name">the name of the variable</param>
+        /// <param name="configuration">the scoped configuration to add</param>
         /// <returns></returns>
         public static IEnvironmentBuilder WithEnvironmentVariable(this IEnvironmentBuilder builder, string name, Action<IEnvironmentConfiguration> configuration=null)
         {
@@ -85,22 +84,16 @@ namespace EnvironmentBuilder.Extensions
             }, cfg =>
             {
                 configuration?.Invoke(cfg);
-                cfg.Trace($"[environment]{name}");
-                //if (!cfg.HasValue(typeof(EnvironmentVariableParser).FullName))
-                //{
-                //    cfg.SetValue(typeof(EnvironmentVariableParser).FullName,
-                //        new EnvironmentVariableParser());
-                //}
-
+                cfg.WithTrace(name, "environment");
             });
         }
 
         /// <summary>
-        /// Shorthand for <see cref="WithEnvironmentVariable"/>
+        /// Shorthand for "WithEnvironmentVariable"
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="name"></param>
-        /// <param name="configuration"></param>
+        /// <param name="name">the name of the variable</param>
+        /// <param name="configuration">the configuration to use</param>
         /// <returns></returns>
         public static IEnvironmentBuilder Env(this IEnvironmentBuilder builder, string name, Action<IEnvironmentConfiguration> configuration = null)
         {
@@ -108,8 +101,8 @@ namespace EnvironmentBuilder.Extensions
         }
 
         /// <summary>
-        /// Shorthand alias for <see cref="WithEnvironmentVariable"/> using the common key set beforehand
-        /// <seealso cref="CommonExtensions.WithCommonKey"/>
+        /// Shorthand alias for "WithEnvironmentVariable" using the common key set beforehand
+        /// "CommonExtensions.WithCommonKey"
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>
