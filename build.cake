@@ -13,7 +13,7 @@ var package=env.Arg("packageDirectory").Arg("p").Env("packageDirectory").Json("b
 var mainProjectFile=env.Default("./src/EnvironmentBuilder/EnvironmentBuilder.csproj").Bundle();
 var nugetApiKey=env.WithEnvironmentVariable("NUGET_API_KEY",config=>
 config.WithNoEnvironmentVariablePrefix()
-.SetEnvironmmentTarget(EnvironmentVariableTarget.Machine))
+.SetEnvironmentTarget(EnvironmentVariableTarget.Machine))
 .Throw("Missing nuget api key").Bundle();
 
 #endregion //ARGUMENTS
