@@ -11,7 +11,8 @@
 Parameter | Description 
  --------|--------
 T | the type to set
-configuration | the configuration to use as source or target 
+configuration | the configuration to use as source or target
+
 
 
 `public static Type GetBuildType(this IReadonlyEnvironmentConfiguration configuration)`
@@ -21,6 +22,7 @@ configuration | the configuration to use as source or target
 Parameter | Description 
  --------|--------
 configuration | the configuration to use as source or target 
+
 **Returns** the type requested
 
 
@@ -33,6 +35,7 @@ Parameter | Description
 T | the type of value
 builder | the environment builder instance to use as source or target 
 value | the value to add
+
 **Returns** (this is a fluid extension method)
 
 
@@ -45,6 +48,7 @@ Parameter | Description
 T | the type of value
 builder | the environment builder instance to use as source or target 
 value | the value to add
+
 **Returns** (this is a fluid extension method)
 
 
@@ -56,6 +60,7 @@ Parameter | Description
  --------|--------
 builder | the environment builder instance to use as source or target 
 message | the message to throw
+
 **Returns** (this is a fluid extension method)
 
 
@@ -67,6 +72,7 @@ Parameter | Description
  --------|--------
 builder | the environment builder instance to use as source or target 
 message | the message to throw
+
 **Returns** (this is a fluid extension method)
 
 
@@ -78,6 +84,7 @@ Parameter | Description
  --------|--------
 builder | the environment builder instance to use as source or target 
 key | the key name
+
 **Returns** (this is a fluid extension method)
 
 
@@ -88,6 +95,7 @@ Parameter | Description
  --------|--------
 builder | the environment builder instance to use as source or target 
 key | the key name
+
 **Returns** (this is a fluid extension method)
 
 
@@ -97,4 +105,5 @@ key | the key name
 Parameter | Description 
  --------|--------
 configuration | the configuration to use as source or target 
+
 **Returns** the common key or null

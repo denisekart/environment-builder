@@ -105,7 +105,6 @@ The example does the following
    - It returns the value "foo_action" because none of other sources were available
 
 
-TODO: Missing complete documentation
 
 ## Using it
 You can implement this utility in your application using the [nuget.org feed](https://www.nuget.org/packages/EnvironmentBuilder/) or by cloning this repo and building the source code yourself.

@@ -62,7 +62,7 @@ Building from source:
 
 ## Usage
 
-The main idea behind the environment builder is to combine various application entry points and configuration sources and combine them into a single "pipe".
+The main idea behind the environment builder is to use various application entry points and configuration sources and combine them into a single "pipe".
 
 A simple use case example:
 ```csharp
@@ -358,35 +358,122 @@ Provide common core functionalities that are and can be useful in any other exte
 
 See [method descriptions](generated/_CommonExtensions.md).
 
+Example:
+
+``` csharp
+Assert.Equal("Foo",EnvironmentManager.Create().Default("Foo").Build());
+//is the same as
+Assert.Equal("Foo",EnvironmentManager.Create().WithDefaultValue("Foo").Build());
+
+Assert.Throws<ArgumentException>(() => EnvironmentManager.Create().Throw().Build());
+//is the same as
+Assert.Throws<ArgumentException>(() => EnvironmentManager.Create().WithException(null).Build());
+
+//will search for values of env(Key) then arg(Key)
+var builder=EnvironmentManager.Create().With("Key").Env().Arg();
+Assert.Equal("Key",builder.Configuration.GetCommonKey());
+```
+
 #### Annotation Extensions
 Provide functionality to annotate the sources, bundler and environament builders
 
 See [method descriptions](generated/_AnnotationExtensions.md).
+
+Example:
+
+``` csharp
+var env = EnvironmentManager.Create(config => config.WithDescription("Main description"));
+Assert.Equal("Main description",env.GetDescription());
+
+env.WithDescription("some source description").Default("foo").Bundle();
+Assert.True(new[]{ "some source description" }.SequenceEqual(env.Bundles.GetDescriptions()));
+
+env.WithDescription("d2").Throw("Throw").Bundle();
+
+var help = env.GetHelp();
+Assert.Equal(
+    @"Main description
+    
+    - [default]foo
+      some source description
+    - [exception]Throw
+      d2
+      "
+      ,
+    help);
+```
 
 #### Logging Extensions
 Provide functionalities related to logging.
 
 See [method descriptions](generated/_LoggingExtensions.md).
 
+Example:
+
+``` csharp
+var writer=new TestOutputHelperWriter(_outputHelper);
+var env = EnvironmentManager.Create(config =>
+    config
+        .WithTextWriterLogger(writer)
+        .WithLogLevel(EnvironmentBuilder.Abstractions.LogLevel.Trace));
+
+writer.TextWritten += (s, e) => Assert.True(e.Text == "[TRACE] Foo");
+
+env.LogTrace("Foo");
+```
+
 #### Argument Extensions
 Provide the default command line argument parsers and sources.
 
 See [method descriptions](generated/_CommandLineArgumentExtensions.md).
+
+Example:
+
+``` csharp
+var env = EnvironmentManager.Create();
+var var1 = env.Arg("longOption").Arg("l").Bundle();       
+```
 
 #### Environment Variable Extensions
 Provide the default environment variable parsers and sources. The environment variables can be retrieved from the current process, the user or the machine.
 
 See [method descriptions](generated/_EnvironmentVariableExtensions.md).
 
+Example:
+
+``` csharp
+Environment.SetEnvironmentVariable("option","bar");
+Environment.SetEnvironmentVariable("prefix_option","foo");
+var env = EnvironmentManager.Create(config=>config.WithEnvironmentVariablePrefix("prefix_"));
+Assert.Equal("foo",env.Env("option").Build());
+Assert.Equal("bar",env.Env("option",c=>c.WithNoEnvironmentVariablePrefix()).Build());
+```
+
 #### Json File Extensions
 Provide the default json file parsers and sources. Simple and complex types can be parsed. The values are parsed using the [JSON path](https://goessner.net/articles/JsonPath/) notation. Multiple json files are supported at once.
 
 See [method descriptions](generated/_JsonFileExtensions.md).
 
+Example:
+
+``` csharp
+var env = EnvironmentManager.Create(config => 
+    config.WithJsonFile("json1.json").WithJsonFile("json2.json"));
+Assert.Equal("bar",env.Json("$(json1).foo").Build());
+Assert.Equal("baz",env.Json("$(json2).bar").Build());
+```
+
 #### Xml File Extensions
 Provide the default xml file parsers and sources. Simple types and enumerations can be parsed. The values are parsed using the XPath expressions. Multiple xml files are supported at once.
 
 See [method descriptions](generated/_XmlFileExtensions.md).
+
+Example:
+
+``` csharp
+var env = EnvironmentManager.Create(config => config.WithXmlFile("xml1.xml"));
+Assert.Equal("bar",env.Xml("/foo").Build());
+```
 
 #### Future Work
 I have absolutely no idea when but...

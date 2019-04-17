@@ -1,4 +1,4 @@
-#addin "nuget:?package=EnvironmentBuilder&version=0.2.0"
+#addin "nuget:?package=EnvironmentBuilder&version=1.0.0"
 using EnvironmentBuilder.Extensions;
 
 #region ARGUMENTS
@@ -139,7 +139,7 @@ Task("Default")
 Task("Help")
 .Does(()=>{
    Information($"Showing info for version {GitVersion().FullSemVer}");
-   Information(env.Help());
+   Information(env.GetHelp());
    });
 
 #endregion //MISC

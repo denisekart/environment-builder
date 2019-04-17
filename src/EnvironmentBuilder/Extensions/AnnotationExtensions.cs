@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using EnvironmentBuilder.Abstractions;
 
 namespace EnvironmentBuilder.Extensions
@@ -78,13 +79,36 @@ namespace EnvironmentBuilder.Extensions
             var help = $"{{0}}{Environment.NewLine}{Environment.NewLine}{{1}}";
             var parameter0 = builder.GetDescription();
             bool parameter0valid = !string.IsNullOrEmpty(parameter0?.Trim());
+
             string tabFormat = "\t";
-            var parameter1 = string.Join(Environment.NewLine ,
-                builder.Bundles.GetDescriptions()
-                    .Select(x=>$"{(parameter0valid?tabFormat:string.Empty)}{x??string.Empty}").ToArray()
-            );
+            var descriptions = builder.Bundles.GetDescriptions().ToArray();
+            var traces = builder.Bundles.Select(x => x.Sources.Select(y => y.GetTrace()).ToArray()).ToArray();
+            var range = Math.Max(descriptions.Length, traces.Length);
+            var combined = Enumerable.Range(0, range)
+                .Select(x =>
+                {
+                    StringBuilder sb=new StringBuilder();
+                    if (x < traces.Length)
+                        sb.AppendLine($"- {(string.Join(", ",traces[x]))}");
+                    else
+                        sb.AppendLine($"- [unknown]");
+
+
+                    if (x < descriptions.Length)
+                        sb.AppendLine(tabFormat+descriptions[x]);
+                    else
+                        sb.AppendLine();
+
+                    return sb.ToString();
+                }).ToArray();
+            var parameter1=string.Join(string.Empty,combined);
+            //var parameter1 = string.Join(Environment.NewLine ,
+            //    builder.Bundles.GetDescriptions()
+            //        .Select(x=>$"{(parameter0valid?tabFormat:string.Empty)}{x??string.Empty}").ToArray()
+            //);
             return parameter0valid ? string.Format(help, parameter0, parameter1) : parameter1;
         }
+
 
         /// <summary>
         /// Adds a trace to the current value. Useful for tracing the surces and source types

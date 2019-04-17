@@ -9,6 +9,7 @@ Parameter | Description
  --------|--------
 configuration | the configuration to use as source or target  the configuration to modify
 description | the description to set
+
 **Returns** the configuration
 
 
@@ -20,6 +21,7 @@ Parameter | Description
  --------|--------
 builder | the environment builder instance to use as source or target  
 description | the description to use
+
 **Returns** (this is a fluid extension method)
 
 
@@ -30,6 +32,7 @@ description | the description to use
 Parameter | Description 
  --------|--------
 builder | the environment builder instance to use as source or target  the builder
+
 **Returns** the description
 
 
@@ -40,6 +43,7 @@ builder | the environment builder instance to use as source or target  the build
 Parameter | Description 
  --------|--------
 bundles | the bundles to get the descriptions for 
+
 **Returns** (this is a fluid extension method)
 
 
@@ -50,6 +54,7 @@ bundles | the bundles to get the descriptions for
 Parameter | Description 
  --------|--------
 builder | the environment builder instance to use as source or target  
+
 **Returns** the formatted help string
 
 
@@ -62,6 +67,7 @@ Parameter | Description
 configuration | the configuration to use as source or target  
 value | the trace value
 sourceType | the optional source type (will ne displayed in brackets before the value)
+
 **Returns** (this is a fluid extension method)
 
 
@@ -72,4 +78,5 @@ sourceType | the optional source type (will ne displayed in brackets before the 
 Parameter | Description 
  --------|--------
 configuration | the configuration to use as source or target  
+
 **Returns** the trace value or null if not provided

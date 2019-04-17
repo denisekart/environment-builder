@@ -11,6 +11,7 @@ Parameter | Description
  --------|--------
 configuration | the configuration to use as source or target  
 level | the log level to set
+
 **Returns** (this is a fluid extension method)
 
 
@@ -23,6 +24,7 @@ Parameter | Description
  --------|--------
 configuration | the configuration to use as source or target  
 level | the log level to set
+
 **Returns** (this is a fluid extension method)
 
 
@@ -36,6 +38,7 @@ Parameter | Description
 configuration | the configuration to use as source or target  
 loggerFacade | the logger to use
 level | the logging level to use
+
 **Returns** (this is a fluid extension method)
 
 
@@ -47,6 +50,7 @@ Parameter | Description
  --------|--------
 configuration | the configuration to use as source or target  
 level | the logging level to use
+
 **Returns** (this is a fluid extension method)
 
 
@@ -59,6 +63,7 @@ Parameter | Description
 configuration | the configuration to use as source or target  
 writer | the text writer
 level | the logging level to use
+
 **Returns** (this is a fluid extension method)
 
 
@@ -70,6 +75,7 @@ level | the logging level to use
 Parameter | Description 
  --------|--------
 configuration | the configuration to use as source or target  
+
 **Returns** (this is a fluid extension method)
 
 

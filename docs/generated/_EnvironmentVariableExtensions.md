@@ -19,6 +19,7 @@ target | the target to use
 Parameter | Description 
  --------|--------
 configuration | the configuration to use as source or target  
+
 **Returns** the target currently used
 
  
@@ -31,6 +32,7 @@ Parameter | Description
  --------|--------
 configuration | the configuration to use as source or target  
 prefix | the prefix to use
+
 **Returns** (this is a fluid extension method)
 
 
@@ -42,7 +44,7 @@ prefix | the prefix to use
 Parameter | Description 
  --------|--------
 configuration | the configuration to use as source or target  
-prefix | 
+
 **Returns** (this is a fluid extension method)
 
 
@@ -53,6 +55,7 @@ prefix |
 Parameter | Description 
  --------|--------
 configuration | the configuration to use as source or target  
+
 **Returns** the prefix currently being used or null
 
 
@@ -65,6 +68,7 @@ Parameter | Description
 builder | the environment builder instance to use as source or target  
 name | the name of the variable
 configuration | the configuration to use as source or target  the scoped configuration to add
+
 **Returns** (this is a fluid extension method)
 
 
@@ -77,6 +81,7 @@ Parameter | Description
 builder | the environment builder instance to use as source or target  
 name | the name of the variable
 configuration | the configuration to use as source or target  the configuration to use
+
 **Returns** (this is a fluid extension method)
 
 
@@ -88,4 +93,5 @@ configuration | the configuration to use as source or target  the configuration 
 Parameter | Description 
  --------|--------
 builder | the environment builder instance to use as source or target  
+
 **Returns** (this is a fluid extension method)

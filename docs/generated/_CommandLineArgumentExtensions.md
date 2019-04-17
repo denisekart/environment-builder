@@ -11,7 +11,8 @@ Parameter | Description
 builder | the environment builder instance to use as source or target  
 name | the argument name
 configuration | additional configurration scoped to the argument
-**Returns** 
+
+**Returns** (this is a fluid extension method)
 
 
 ` public static IEnvironmentBuilder Arg(this IEnvironmentBuilder builder, string name,Action<IEnvironmentConfiguration> configuration)`
@@ -23,7 +24,8 @@ Parameter | Description
 builder | the environment builder instance to use as source or target  
 name | the argument name
 configuration | the scoped configuration to add
-**Returns** 
+
+**Returns** (this is a fluid extension method)
 
 
 ` public static IEnvironmentBuilder Arg(this IEnvironmentBuilder builder, string name)`
@@ -34,7 +36,8 @@ Parameter | Description
  --------|--------
 builder | the environment builder instance to use as source or target  
 name | the argument name
-**Returns** 
+
+**Returns** (this is a fluid extension method)
 
 
 ` public static IEnvironmentBuilder Arg(this IEnvironmentBuilder builder)`
@@ -45,4 +48,5 @@ name | the argument name
 Parameter | Description 
  --------|--------
 builder | the environment builder instance to use as source or target  
-**Returns** 
+
+**Returns** (this is a fluid extension method)

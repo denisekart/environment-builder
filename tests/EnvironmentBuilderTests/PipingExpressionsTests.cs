@@ -1,14 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.WebSockets;
 using EnvironmentBuilder;
 using EnvironmentBuilder.Extensions;
 using EnvironmentBuilderRandomContrib.Extensions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace EnvironmentBuilderTests
 {
     public class PipingExpressionsTests
     {
+        private readonly ITestOutputHelper _outputHelper;
+
+        public PipingExpressionsTests(ITestOutputHelper outputHelper)
+        {
+            _outputHelper = outputHelper;
+        }
+
         [Fact]
         public void PipeConfiguration1()
         {
@@ -65,6 +75,93 @@ namespace EnvironmentBuilderTests
             Assert.True(next2>next1);
             Assert.True(next3>next2);
             Assert.True(next4>next3);
+        }
+
+
+        [Fact]
+        public void DocumentCommonExtesions()
+        {
+            Assert.Equal("Foo",EnvironmentManager.Create().Default("Foo").Build());
+            //is the same as
+            Assert.Equal("Foo",EnvironmentManager.Create().WithDefaultValue("Foo").Build());
+
+            Assert.Throws<ArgumentException>(() => EnvironmentManager.Create().Throw().Build());
+            //is the same as
+            Assert.Throws<ArgumentException>(() => EnvironmentManager.Create().WithException(null).Build());
+
+            //will search for values of env(Key) then arg(Key)
+            var builder=EnvironmentManager.Create().With("Key").Env().Arg();
+            Assert.Equal("Key",builder.Configuration.GetCommonKey());
+        }
+
+        [Fact]
+        public void DocumentAnnotationExtensions()
+        {
+            var env = EnvironmentManager.Create(config => config.WithDescription("Main description"));
+            Assert.Equal("Main description",env.GetDescription());
+
+            env.WithDescription("some source description").Default("foo").Bundle();
+            Assert.True(new[]{ "some source description" }.SequenceEqual(env.Bundles.GetDescriptions()));
+
+            env.WithDescription("d2").Throw("Throw").Bundle();
+            var expected = string.Format(
+                $"{{0}}{Environment.NewLine}{Environment.NewLine}{{1}}{Environment.NewLine}{{2}}{Environment.NewLine}{{3}}{Environment.NewLine}{{4}}{Environment.NewLine}",
+                "Main description",
+                "- [default]foo",
+                "\tsome source description",
+                "- [exception]Throw",
+                "\td2");
+            var help = env.GetHelp();
+            Assert.Equal(
+                expected,
+                help);
+        }
+
+        [Fact]
+        public void LoggingExtensions()
+        {
+            var writer=new TestOutputHelperWriter(_outputHelper);
+            var env = EnvironmentManager.Create(config =>
+                config
+                    .WithTextWriterLogger(writer)
+                    .WithLogLevel(EnvironmentBuilder.Abstractions.LogLevel.Trace));
+            writer.TextWritten += (s, e) => Assert.True(e.Text == "[TRACE] Foo");
+            env.LogTrace("Foo");
+        }
+
+        [Fact]
+        public void CommandLineArgumentExtensions()
+        {
+            var env = EnvironmentManager.Create();
+            var var1 = env.Arg("longOption").Arg("l").Bundle();
+            
+        }
+
+        [Fact]
+        public void EnvironmentVariableExtensions()
+        {
+            Environment.SetEnvironmentVariable("option","bar");
+            Environment.SetEnvironmentVariable("prefix_option","foo");
+            var env = EnvironmentManager.Create(config=>config.WithEnvironmentVariablePrefix("prefix_"));
+            Assert.Equal("foo",env.Env("option").Build());
+            Assert.Equal("bar",env.Env("option",c=>c.WithNoEnvironmentVariablePrefix()).Build());
+
+        }
+
+        [Fact]
+        public void JsonFileExtensions()
+        {
+            var env = EnvironmentManager.Create(config => 
+                config.WithJsonFile("json1.json").WithJsonFile("json2.json"));
+            Assert.Equal("bar",env.Json("$(json1).foo").Build());
+            Assert.Equal("baz",env.Json("$(json2).bar").Build());
+        }
+
+        [Fact]
+        public void XmlFileExtensions()
+        {
+            var env = EnvironmentManager.Create(config => config.WithXmlFile("xml1.xml"));
+            Assert.Equal("bar",env.Xml("/foo").Build());
         }
     }
 }
