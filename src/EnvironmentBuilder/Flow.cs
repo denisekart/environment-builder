@@ -8,6 +8,7 @@ namespace EnvironmentBuilder
     public class Flow : IFlow
     {
         private readonly IEnvironmentBuilder _builder;
+        private readonly IFlow _parent;
 
         public static IFlow Create(Action<Abstractions.IEnvironmentConfiguration> configuration = null)
         {
@@ -16,11 +17,12 @@ namespace EnvironmentBuilder
             return new Flow(builder);
         }
 
-        private Flow(IEnvironmentBuilder builder)
+        private Flow(IEnvironmentBuilder builder, IFlow parent = null)
         {
             _builder = builder;
+            _parent = parent;
         }
-        public IFlowCaseBuilder Case(Func<IEnvironmentBuilder, IEnvironmentBundle> sources)
+        public IFlow Case(Func<IEnvironmentBuilder, IEnvironmentBundle> sources)
         {
             var bundle = sources?.Invoke(_builder);
             throw new NotImplementedException();
@@ -41,6 +43,9 @@ namespace EnvironmentBuilder
             throw new NotImplementedException();
         }
 
+        public IFlow And => _parent ?? throw new InvalidOperationException();
+        public IFlow Or => _parent ?? throw new InvalidOperationException();
+
         public void Validate()
         {
 
@@ -49,10 +54,12 @@ namespace EnvironmentBuilder
 
     public interface IFlow
     {
-        IFlowCaseBuilder Case(Func<IEnvironmentBuilder, IEnvironmentBundle> sources);
+        IFlow Case(Func<IEnvironmentBuilder, IEnvironmentBundle> sources);
         IFlow OneOf(params Action<IFlow>[] cases);
         IFlow AllOf(params Action<IFlow>[] cases);
         IFlow AnyOf(params Action<IFlow>[] cases);
+        IFlow And { get; }
+        IFlow Or { get; }
     }
 
     public interface IFlowCaseBuilder : IFlow
