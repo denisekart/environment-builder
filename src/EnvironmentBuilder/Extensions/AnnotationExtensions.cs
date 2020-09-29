@@ -1,8 +1,8 @@
-﻿using System;
+﻿using EnvironmentBuilder.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using EnvironmentBuilder.Abstractions;
 
 namespace EnvironmentBuilder.Extensions
 {
@@ -16,7 +16,7 @@ namespace EnvironmentBuilder.Extensions
         /// <returns>the configuration</returns>
         public static IEnvironmentConfiguration WithDescription(this IEnvironmentConfiguration configuration, string description)
         {
-            return configuration.SetValue(Constants.GlobalDescriptionValueKey,description);
+            return configuration.SetValue(Constants.GlobalDescriptionValueKey, description);
         }
         /// <summary>
         /// Sets the scoped description for the current bundle. This value will be used to print out the info for the current bundle.
@@ -55,7 +55,7 @@ namespace EnvironmentBuilder.Extensions
             int currentDescriptionOwner = -1;
             for (int i = 0; i < raw.Count; i++)
             {
-                if ( currentDescription != null && currentDescription.Equals(raw[i]) && currentDescriptionOwner<i)
+                if (currentDescription != null && currentDescription.Equals(raw[i]) && currentDescriptionOwner < i)
                 {
                     raw[i] = null;
                 }
@@ -87,21 +87,21 @@ namespace EnvironmentBuilder.Extensions
             var combined = Enumerable.Range(0, range)
                 .Select(x =>
                 {
-                    StringBuilder sb=new StringBuilder();
+                    StringBuilder sb = new StringBuilder();
                     if (x < traces.Length)
-                        sb.AppendLine($"- {(string.Join(", ",traces[x]))}");
+                        sb.AppendLine($"- {(string.Join(", ", traces[x]))}");
                     else
                         sb.AppendLine($"- [unknown]");
 
 
                     if (x < descriptions.Length)
-                        sb.AppendLine(tabFormat+descriptions[x]);
+                        sb.AppendLine(tabFormat + descriptions[x]);
                     else
                         sb.AppendLine();
 
                     return sb.ToString();
                 }).ToArray();
-            var parameter1=string.Join(string.Empty,combined);
+            var parameter1 = string.Join(string.Empty, combined);
             //var parameter1 = string.Join(Environment.NewLine ,
             //    builder.Bundles.GetDescriptions()
             //        .Select(x=>$"{(parameter0valid?tabFormat:string.Empty)}{x??string.Empty}").ToArray()
@@ -117,12 +117,12 @@ namespace EnvironmentBuilder.Extensions
         /// <param name="value">the trace value</param>
         /// <param name="sourceType">the optional source type (will ne displayed in brackets before the value)</param>
         /// <returns></returns>
-        public static IEnvironmentConfiguration WithTrace(this IEnvironmentConfiguration configuration, string value, string sourceType=null)
+        public static IEnvironmentConfiguration WithTrace(this IEnvironmentConfiguration configuration, string value, string sourceType = null)
         {
-            return configuration.SetValue(Constants.SourceTraceValueKey, 
+            return configuration.SetValue(Constants.SourceTraceValueKey,
                 string.IsNullOrEmpty(sourceType?.Trim())
-                    ?value
-                    :$"[{sourceType}]{value}");
+                    ? value
+                    : $"[{sourceType}]{value}");
         }
         /// <summary>
         /// Gets the trace value
