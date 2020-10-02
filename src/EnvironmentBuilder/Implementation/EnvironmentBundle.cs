@@ -13,13 +13,30 @@ namespace EnvironmentBuilder.Implementation
             public Func<IEnvironmentConfiguration, object> SourceItem;
             public IEnvironmentConfiguration Configuration;
         }
+
         private IList<Source> _orderedSources=new List<Source>();
+        private IEnvironmentBuilder _builder;
+
+        public EnvironmentBundle(IEnvironmentBuilder builder)
+        {
+            this._builder = builder;
+        }
+
         public void AddSource<T>(Func<IReadonlyEnvironmentConfiguration, T> source, IEnvironmentConfiguration configuration)
         {
             _orderedSources.Add(new Source{Configuration = configuration,SourceItem = cfg=>source.Invoke(cfg)});
         }
 
         public IEnumerable<IReadonlyEnvironmentConfiguration> Sources => _orderedSources.Select(x => x.Configuration).ToArray();
+
+        public IReadonlyEnvironmentConfiguration Configuration => _builder.Configuration;
+
+        public IEnumerable<IEnvironmentBundle> Bundles => _builder.Bundles;
+
+        public IEnvironmentBundle Bundle()
+        {
+            return _builder.Bundle();
+        }
 
         public string Build()
         {
@@ -55,6 +72,26 @@ namespace EnvironmentBuilder.Implementation
                 }
             }
             return default;
+        }
+
+        public IEnvironmentBuilder WithConfiguration(Action<IEnvironmentConfiguration> configuration)
+        {
+            return _builder.WithConfiguration(configuration);
+        }
+
+        public IEnvironmentBuilder WithSource<T>(Func<IReadonlyEnvironmentConfiguration, T> source)
+        {
+            return _builder.WithSource(source);
+        }
+
+        public IEnvironmentBuilder WithSource<T>(Func<T> source)
+        {
+            return _builder.WithSource(source);
+        }
+
+        public IEnvironmentBuilder WithSource<T>(Func<IReadonlyEnvironmentConfiguration, T> source, Action<IEnvironmentConfiguration> configuration)
+        {
+            return _builder.WithSource(source, configuration);
         }
     }
 }

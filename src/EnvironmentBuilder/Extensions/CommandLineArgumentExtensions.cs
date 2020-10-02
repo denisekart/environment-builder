@@ -13,7 +13,7 @@ namespace EnvironmentBuilder.Extensions
         /// <param name="name">the argument name</param>
         /// <param name="configuration">additional configurration scoped to the argument</param>
         /// <returns></returns>
-        public static IEnvironmentBuilder WithArgument(this IEnvironmentBuilder builder,string name,Action<IEnvironmentConfiguration> configuration=null)
+        public static T WithArgument<T>(this T builder,string name,Action<IEnvironmentConfiguration> configuration=null) where T : class, IEnvironmentBuilder
         {
             if (!builder.Configuration.HasValue(typeof(ArgumentParser).FullName))
             {
@@ -35,7 +35,7 @@ namespace EnvironmentBuilder.Extensions
                 //        new ArgumentParser(Environment.GetCommandLineArgs()));
                 //}
 
-            });
+            }) as T;
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace EnvironmentBuilder.Extensions
         /// <param name="name">the argument name</param>
         /// <param name="configuration">the scoped configuration to add</param>
         /// <returns></returns>
-        public static IEnvironmentBuilder Arg(this IEnvironmentBuilder builder, string name,Action<IEnvironmentConfiguration> configuration)
+        public static T Arg<T>(this T builder, string name,Action<IEnvironmentConfiguration> configuration) where T : class, IEnvironmentBuilder
         {
             return builder.WithArgument(name,configuration);
         }
@@ -56,7 +56,7 @@ namespace EnvironmentBuilder.Extensions
         /// <param name="builder"></param>
         /// <param name="name">the argument name</param>
         /// <returns></returns>
-        public static IEnvironmentBuilder Arg(this IEnvironmentBuilder builder, string name)
+        public static T Arg<T>(this T builder, string name) where T : class, IEnvironmentBuilder
         {
             return builder.WithArgument(name);
         }

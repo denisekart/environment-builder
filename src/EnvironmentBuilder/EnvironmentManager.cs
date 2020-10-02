@@ -11,7 +11,7 @@ namespace EnvironmentBuilder
     public class EnvironmentManager : IEnvironmentBuilder
     {
         private readonly IList<IEnvironmentBundle> _bundles=new List<IEnvironmentBundle>();
-        private EnvironmentBundle _instance=new EnvironmentBundle();
+        private EnvironmentBundle _instance;
         private IEnvironmentConfiguration _configuration=new EnvironmentConfiguration();
 
         /// <summary>
@@ -28,6 +28,7 @@ namespace EnvironmentBuilder
 
         internal EnvironmentManager()
         {
+            _instance = new EnvironmentBundle(this);
             _configuration.WithNoopLogger();
         }
         internal EnvironmentManager(Action<IEnvironmentConfiguration> configuration) :this()
@@ -88,7 +89,7 @@ namespace EnvironmentBuilder
         public IEnvironmentBundle Bundle()
         {
             var instance = _instance;
-            _instance=new EnvironmentBundle();
+            _instance=new EnvironmentBundle(this);
             _bundles.Add(instance);
             return instance;
         }
