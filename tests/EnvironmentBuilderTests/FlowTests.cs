@@ -57,7 +57,8 @@ namespace EnvironmentBuilderTests
         {
             var flow = Flow.Create(x => new EntryConfiguration
             {
-                Pack = x.Arg("p").Default(true).As<bool>()
+                Pack = x.Arg("p").Default(true).As<bool>(),
+                
             });
             Assert.True(flow.Model.Pack);
         }

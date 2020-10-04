@@ -24,10 +24,6 @@ namespace EnvironmentBuilder
 
         private readonly Stack<IFlow> _scopes = new Stack<IFlow>();
 
-        //public IList<IFlow> OneOfFlows { get; set; } = new List<IFlow>();
-        //public IList<IFlow> AllOfFlows { get; set; } = new List<IFlow>();
-        //public IList<IFlow> AnyOfFlows { get; set; } = new List<IFlow>();
-
         public void CreateScope()
         {
             _scopes.Push(new Flow(_builder, this));
@@ -44,7 +40,7 @@ namespace EnvironmentBuilder
             return new Flow(builder);
         }
 
-        public static FlowResult<T> Create<T>(Func<IEnvironmentBuilder, T> definition)
+        public static FlowResult<T> Create<T>(Func<IFlow, T> definition)
         {
             var flow = Create();
             return new FlowResult<T>(definition.Invoke(flow), flow);
@@ -55,46 +51,6 @@ namespace EnvironmentBuilder
             _builder = builder;
             _parent = parent;
         }
-
-        //public T Case<T>(Func<IFlow, T> definition) where T : class
-        //{
-        //    return definition.Invoke(null);
-        //}
-
-        //public Resolvable<T> Case<T>(Func<IEnvironmentBundle, Resolvable<T>> definition)
-        //{
-        //    return definition.Invoke(null);
-        //}
-
-        //public IFlow Case(Func<IEnvironmentBuilder, IEnvironmentBundle> sources)
-        //{
-        //    var bundle = sources?.Invoke(_builder);
-        //    throw new NotImplementedException();
-        //}
-
-        //public IFlow OneOf(params Action<IFlow>[] cases)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public IFlow AllOf(params Action<IFlow>[] cases)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public IFlow AnyOf(params Action<IFlow>[] cases)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public IFlow And => _parent ?? throw new InvalidOperationException();
-        //public IFlow Or => _parent ?? throw new InvalidOperationException();
-
-        //public void Validate()
-        //{
-
-        //}
-
 
         #region Implementation of IEnvironmentBuilder
 
@@ -187,19 +143,16 @@ namespace EnvironmentBuilder
     {
         void CreateScope();
         void CommitScope();
-        //Resolvable<T> Case<T>(Func<IEnvironmentBundle, Resolvable<T>> definition);
-        //T Case<T>(Func<IFlow, T> definition) where T : class;
-        //IFlow Case(Func<IEnvironmentBuilder, IEnvironmentBundle> sources);
-        //IFlow OneOf(params Action<IFlow>[] cases);
-        //IFlow AllOf(params Action<IFlow>[] cases);
-        //IFlow AnyOf(params Action<IFlow>[] cases);
-        //IFlow And { get; }
-        //IFlow Or { get; }
     }
 
 
     public static class FlowExtensions
     {
+        public static Resolvable<T> Verify<T>(this Resolvable<T> resolvable, Func<T, bool> verificationFactory)
+        {
+
+        }
+
         public static Resolvable<T> As<T>(this IEnvironmentBuilder bundle)
         {
             return new Resolvable<T>(bundle.Bundle().Build<T>);
@@ -209,7 +162,6 @@ namespace EnvironmentBuilder
         {
             if (builder.Bundle().Build<bool>())
             {
-                // start here from the begining and just re-set the parent/child flow when done
                 return new Resolvable<T>(section)
                 {
                     Scope = builder as IFlow
