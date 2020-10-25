@@ -173,7 +173,7 @@ namespace EnvironmentBuilder.Implementation
 
         private object ExtractEnumValue(Type type, Tuple<string, string> tuple)
         {
-            if (tuple.Item2 == null)
+            if (tuple?.Item2 == null)
                 return null;
             try
             {
