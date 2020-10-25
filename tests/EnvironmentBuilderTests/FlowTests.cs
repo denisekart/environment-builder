@@ -152,6 +152,24 @@ namespace EnvironmentBuilderTests
             flowSpec.Verify();
         }
 
+        [Fact]
+        public void ShouldResolveComplexScenarioWithEnumType()
+        {
+            Setx("a", "false");
+            Setx("b", "true");
+            Setx("c", "RandomValue2");
+
+            var flow = EnvironmentBuilder.Flow.Create(x => new
+            {
+                isConsumer = x.Env(Getx("a")).As<bool>(),
+                producer = x.Env(Getx("b"))
+                    .When(true, () => new
+                    {
+                        scenario = x.Env(Getx("c")).As<RandomEnum>().Required()
+                    })
+            }).Verify();
+        }
+
         public class EntryConfiguration
         {
             public bool Pack { get; set; }

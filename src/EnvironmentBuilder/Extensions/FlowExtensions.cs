@@ -206,7 +206,7 @@ namespace EnvironmentBuilder.Extensions
                         }
                         else
                         {
-                            propertyInfo.GetValue(value, null).Verify();
+                            propertyInfo.GetValue(value, null)?.Verify();
                         }
                     }
                     catch (ArgumentException iae)
