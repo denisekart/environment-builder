@@ -46,7 +46,16 @@ namespace EnvironmentBuilder.Implementation
 
         private object ExtractEnumValue(Type type, string value)
         {
-            return Enum.Parse(type, value, true);
+            if (value == null)
+                return null;
+            try
+            {
+                return Enum.Parse(type, value, true);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         private object ExtractEnumerableValue(Type type, string value)

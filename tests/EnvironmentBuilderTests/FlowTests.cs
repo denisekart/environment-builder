@@ -165,7 +165,9 @@ namespace EnvironmentBuilderTests
                 producer = x.Env(Getx("b"))
                     .When(true, () => new
                     {
-                        scenario = x.Env(Getx("c")).As<RandomEnum>().Required()
+                        scenario = x.Env("nonExistent").Env(Getx("c")).As<RandomEnum>().Required(),
+                        NumberOfRequests = x.Arg("n").Arg("number").Default(1).As<int>(),
+                        Timeout = x.Arg("t").Arg("timeout").Default(0).As<int>()
                     })
             }).Verify();
         }

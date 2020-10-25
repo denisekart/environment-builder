@@ -173,7 +173,16 @@ namespace EnvironmentBuilder.Implementation
 
         private object ExtractEnumValue(Type type, Tuple<string, string> tuple)
         {
-            return Enum.Parse(type, tuple.Item2, true);
+            if (tuple.Item2 == null)
+                return null;
+            try
+            {
+                return Enum.Parse(type, tuple.Item2, true);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         private static object ExtractEnumerableValue(Type type, Tuple<string, string> tuple, List<Tuple<string, string>> tuples)
