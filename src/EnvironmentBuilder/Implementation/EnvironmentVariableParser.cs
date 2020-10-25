@@ -32,12 +32,21 @@ namespace EnvironmentBuilder.Implementation
             {
                 return ExtractEnumerableValue(type, value);
             }
+            else if (typeof(Enum).IsAssignableFrom(type))
+            {
+                return ExtractEnumValue(type, value);
+            }
             else
             {
                 //TODO: support other types
             }
 
             return null;
+        }
+
+        private object ExtractEnumValue(Type type, string value)
+        {
+            return Enum.Parse(type, value, true);
         }
 
         private object ExtractEnumerableValue(Type type, string value)

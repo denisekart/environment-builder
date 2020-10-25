@@ -148,5 +148,13 @@ namespace EnvironmentBuilderTests
             var value = parser.Value("z", typeof(bool));
             Assert.Equal(true, value);
         }
+
+        [Fact]
+        public void ParseEnumValue()
+        {
+            var parser = new ArgumentParser(new[] { "--enumValue=RandomValue2"});
+            var value = parser.Value("enumValue", typeof(RandomEnum));
+            Assert.Equal(RandomEnum.RandomValue2, value);
+        }
     }
 }

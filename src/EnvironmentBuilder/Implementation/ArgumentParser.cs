@@ -73,8 +73,6 @@ namespace EnvironmentBuilder.Implementation
                                 value = value.Substring(1);
                             if (value?.EndsWith("\"") ?? false)
                                 value = value.Substring(0, value.Length - 1);
-                            //value = value?.TrimStart('"');
-                            //value = value?.TrimEnd('"');
                         }
                         else if (index + 1 < _args.Length &&
                                  !IsOption(_args[index + 1]))
@@ -162,12 +160,20 @@ namespace EnvironmentBuilder.Implementation
             {
                 return ExtractEnumerableValue(type, tuple, tuples);
             }
-            else
+            else if (typeof(Enum).IsAssignableFrom(type))
             {
+                return ExtractEnumValue(type, tuple);
+            }
+            else {
                 //TODO: support other types
             }
 
             return null;
+        }
+
+        private object ExtractEnumValue(Type type, Tuple<string, string> tuple)
+        {
+            return Enum.Parse(type, tuple.Item2, true);
         }
 
         private static object ExtractEnumerableValue(Type type, Tuple<string, string> tuple, List<Tuple<string, string>> tuples)

@@ -46,5 +46,12 @@ namespace EnvironmentBuilderTests
             Assert.True(new[]{"foo","bar"}.SequenceEqual(value));
         }
 
+        [Fact]
+        public void ParseEnvironmentVariableToEnum()
+        {
+            Environment.SetEnvironmentVariable(nameof(ParseEnvironmentVariableToEnum), "RandomValue1");
+            var value = EnvironmentManager.Create().Env(nameof(ParseEnvironmentVariableToEnum)).Build<RandomEnum>();
+            Assert.Equal(RandomEnum.RandomValue1, value);
+        }
     }
 }

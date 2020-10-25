@@ -1,4 +1,6 @@
-﻿using EnvironmentBuilder;
+﻿using System;
+using System.Runtime.CompilerServices;
+using EnvironmentBuilder;
 using EnvironmentBuilder.Extensions;
 using Xunit;
 
@@ -6,50 +8,102 @@ namespace EnvironmentBuilderTests
 {
     public class FlowTests
     {
-        //    [Fact]
-        //    public void ShouldBranchWhenAnyOf()
-        //    {
-        //        var flow = Flow.Create()
-        //            .OneOf(
-        //                f => f.Case(c => c.Arg("a").Bundle()),
-        //                f => f.AllOf(c =>
-        //                      c.Case(x => x.Arg("b").Bundle())
-        //                          .AnyOf(
-        //                            b => b.Case(x => x.Arg("C").Bundle())
-        //                          )
-        //                    )
-        //            );
-        //    }
-
-        //    [Fact]
-        //    public void ShouldObeyLogicalAndRule()
-        //    {
-        //        var flow = Flow.Create()
-        //            .Case(x => x.Arg("a").Bundle())
-        //            .And
-        //            .Case(x => x.Arg("b").Bundle());
-        //    }
+        public static void Setx(string name, string value, [CallerMemberName] string caller = null)
+        {
+            Environment.SetEnvironmentVariable($"{nameof(FlowTests)}_{caller}_{name}", value);
+        }
+        public static string Getx(string name, [CallerMemberName] string caller = null)
+        {
+            return $"{nameof(FlowTests)}_{caller}_{name}";
+        }
 
         [Fact]
-        public void ShouldResolveStrongTypedCase()
+        public void ShouldResolveSimpleOption()
         {
-            var flow = Flow.Create(x => new
+            Setx("foo", "bar");
+            var flowSpec = Flow.Create(x => new
             {
-                optionA = x.Arg("foo").As<int>(),
-                optionB = new
-                {
-                    optionC = x.Arg("bar").Default(true)
-                        .And(() => new
-                        {
-                            optionD = x.Arg("baz").As<string>(),
-                            optionE = x.Arg("baz2").Default(true).And(() => new
-                            {
+                optionA = x.Env(Getx("foo")).As<string>()
+            });
 
-                            })
-                        })
+            Assert.NotNull(flowSpec.Value);
+            Assert.Equal("bar", flowSpec.Value.optionA);
+        }
+
+        [Fact]
+        public void ShouldResolveSimpleNestedOption()
+        {
+            Setx("foo", "bar");
+            var flowSpec = Flow.Create(x => new
+            {
+                optionA = new
+                {
+                    optionB = x.Env(Getx("foo")).As<string>()
                 }
             });
-            var value = flow.Model.optionB.optionC.optionD == "2";
+
+            Assert.NotNull(flowSpec.Value);
+            Assert.Equal("bar", flowSpec.Value.optionA.optionB);
+        }
+
+        [Fact]
+        public void ShouldResolveSimpleCorrectNestedOption_BasedOnCondition()
+        {
+            Setx("foo", "bar");
+            var flowSpec = Flow.Create(x => new
+            {
+                optionA = new
+                {
+                    optionB = x.Env(Getx("foo"))
+                        .When("no", ()=>"incorrect")
+                        .When("bar", ()=>"correct")
+                        .When("baz", ()=> "incorrect")
+                        .When("baf", ()=> "incorrect")
+                }
+            });
+
+            Assert.NotNull(flowSpec.Value);
+            Assert.Equal("correct", flowSpec.Value.optionA.optionB);
+        }
+
+        [Fact]
+        public void ShouldResolveComplexCorrectNestedOption_BasedOnCondition()
+        {
+            Setx("foo", "bar");
+            var flowSpec = Flow.Create(x => new
+            {
+                optionA = new
+                {
+                    optionB = x.Env(Getx("foo"))
+                        .When("no", () => new {optionC = "incorrect"})
+                        .When("bar", () => new { optionC = "correct" })
+                        .When("baz", () => new { optionC = "incorrect" })
+                        .Value
+                }
+            });
+
+            Assert.NotNull(flowSpec.Value);
+            Assert.Equal("correct", flowSpec.Value.optionA.optionB.optionC);
+        }
+
+        [Fact]
+        public void ReturnsNoMatchesWhenNothingMatches()
+        {
+            Setx("foo", "bar");
+            var flowSpec = Flow.Create(x => new
+            {
+                optionA = new
+                {
+                    optionB = x.Env(Getx("foo"))
+                        .When("no", () => new { optionC = "incorrect" })
+                        .When("bah", () => new { optionC = "incorrect" })
+                        .When("baz", () => new { optionC = "incorrect" })
+                        .Value
+                }
+            });
+
+            Assert.NotNull(flowSpec.Value);
+            Assert.Null(flowSpec.Value.optionA.optionB);
         }
 
         [Fact]
@@ -58,9 +112,44 @@ namespace EnvironmentBuilderTests
             var flow = Flow.Create(x => new EntryConfiguration
             {
                 Pack = x.Arg("p").Default(true).As<bool>(),
-                
             });
-            Assert.True(flow.Model.Pack);
+            Assert.True(flow.Value.Pack);
+        }
+
+        [Fact]
+        public void ShouldThrowLazilyWhenMissingRequiredProperty()
+        {
+            var flowSpec = Flow.Create(x => new
+            {
+                required = x.Env("required").Required<string>()
+            });
+
+            Assert.Throws<ArgumentException>(() => !string.IsNullOrEmpty(flowSpec.Value.required));
+        }
+
+        [Fact]
+        public void ShouldThrowEagerlyWhenMissingRequiredPropertyOnValidateCall()
+        {
+            var flowSpec = Flow.Create(x => new
+            {
+                required = x.Env("required").Required<string>()
+            });
+
+            var ex = Assert.Throws<AggregateException>(() => flowSpec.Verify());
+            Assert.StartsWith("The flow model is invalid.", ex.Message);
+            Assert.Single(ex.InnerExceptions);
+        }
+
+        [Fact]
+        public void ShouldNotThrowWhenRequiredPropertyExists()
+        {
+            Setx("required", "IAmAString");
+            var flowSpec = Flow.Create(x => new
+            {
+                required = x.Env(Getx("required")).Required<string>()
+            });
+
+            flowSpec.Verify();
         }
 
         public class EntryConfiguration
