@@ -1,4 +1,5 @@
 #addin "nuget:?package=EnvironmentBuilder&version=1.0.0"
+#tool nuget:?package=GitVersion.CommandLine
 using EnvironmentBuilder.Extensions;
 
 #region ARGUMENTS
@@ -13,7 +14,7 @@ var package=env.Arg("packageDirectory").Arg("p").Env("packageDirectory").Json("b
 var mainProjectFile=env.Default("./src/EnvironmentBuilder/EnvironmentBuilder.csproj").Bundle();
 var nugetApiKey=env.WithEnvironmentVariable("NUGET_API_KEY",config=>
 config.WithNoEnvironmentVariablePrefix()
-.SetEnvironmentTarget(EnvironmentVariableTarget.Machine))
+.SetEnvironmentTarget(EnvironmentVariableTarget.User))
 .Throw("Missing nuget api key").Bundle();
 
 #endregion //ARGUMENTS
@@ -79,7 +80,7 @@ Task("Build")
    });
 Task("Nuget-Pack")
 .IsDependentOn("Clean")
-.IsDependentOn("Version")
+// .IsDependentOn("Version")
 // .IsDependentOn("Build")
 .Does(()=>{
    DotNetCorePack(mainProjectFile.Build(),new DotNetCorePackSettings{
@@ -115,7 +116,7 @@ Task("Test")
 Task("Version")
 .Does(()=>{
    var version=GitVersion(new GitVersionSettings{
-      UpdateAssemblyInfo=false
+      UpdateAssemblyInfo=false,
    });
    var asmVer=XmlPeek(mainProjectFile.Build(),"/Project/PropertyGroup/AssemblyVersion");
    var fileVer=XmlPeek(mainProjectFile.Build(),"/Project/PropertyGroup/FileVersion");
