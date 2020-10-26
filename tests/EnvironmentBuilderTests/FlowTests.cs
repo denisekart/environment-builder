@@ -159,7 +159,7 @@ namespace EnvironmentBuilderTests
             Setx("b", "true");
             Setx("c", "RandomValue2");
 
-            var flow = EnvironmentBuilder.Flow.Create(x => new
+            var flow = Flow.Create(x => new
             {
                 isConsumer = x.Env(Getx("a")).As<bool>(),
                 producer = x.Env(Getx("b"))
@@ -169,6 +169,15 @@ namespace EnvironmentBuilderTests
                         NumberOfRequests = x.Arg("n").Arg("number").Default(1).As<int>(),
                         Timeout = x.Arg("t").Arg("timeout").Default(0).As<int>()
                     })
+            }).Verify();
+        }
+
+        [Fact]
+        public void VerifyShouldNotFailWhenStringArgumentIsNotRequiuredAndNotProvided()
+        {
+            var flow = Flow.Create(x => new
+            {
+                isConsumer = x.Env("iDoNotExist").As<string>(),
             }).Verify();
         }
 

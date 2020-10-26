@@ -181,7 +181,7 @@ namespace EnvironmentBuilder.Extensions
         public static Resolvable<T> Verify<T>(this Resolvable<T> resolvable)
         {
             var value = resolvable.Value;
-            value.Verify();
+            value?.Verify();
             return resolvable;
         }
 

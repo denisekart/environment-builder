@@ -12,9 +12,9 @@
     <PackageTags>configuration environment arguments json xml parse fluid extension</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
-    <AssemblyVersion>1.2.3.0</AssemblyVersion>
-    <FileVersion>1.2.3.0</FileVersion>
-    <Version>1.2.3</Version>
+    <AssemblyVersion>1.2.4.0</AssemblyVersion>
+    <FileVersion>1.2.4.0</FileVersion>
+    <Version>1.2.4</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>EnvironmentBuilder</Product>
   </PropertyGroup>
